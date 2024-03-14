@@ -1,6 +1,7 @@
 import styled from "@emotion/styled";
 
-export const MapContainer = styled.div`
+export const StyledMapContainer = styled.div`
+  width: 100%;
   height: 100%;
-  background: pink;
+  position: relative;
 `;

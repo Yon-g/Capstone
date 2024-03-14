@@ -1,6 +1,8 @@
 import React from "react";
-import { MapContainer } from "./styles";
+import { StyledMapContainer } from "./styles";
 
-export default function MapComponet() {
-  return <MapContainer></MapContainer>;
-}
+const MapComponet = ({ turtlebots }) => {
+  return <StyledMapContainer></StyledMapContainer>;
+};
+
+export default MapComponet;
