@@ -13,26 +13,30 @@ export default function LayoutComponet() {
     const initializeDummyData = () => {
       const dummyTurtlebots = [
         { id: 1, name: "Turtlebot 1", lat: 50, lng: 50 },
-        { id: 2, name: "Turtlebot 2", lat: 150, lng: 50 },
+        { id: 2, name: "Turtlebot 2", lat: 50, lng: 50 },
       ];
       setTurtlebots(dummyTurtlebots);
     };
     initializeDummyData();
-    const timerId = setInterval(() => {
+
+    // 마커의 위치를 더 작은 단위로 업데이트하여 부드러운 움직임 구현
+    const moveMarkers = () => {
       setTurtlebots((prevTurtlebots) =>
-        prevTurtlebots.map((turtlebots) => ({
-          ...turtlebots,
+        prevTurtlebots.map((turtlebot) => ({
+          ...turtlebot,
           lat: Math.max(
             0,
-            Math.min(100, turtlebots.lat + Math.random() * 10 - 5)
+            Math.min(100, turtlebot.lat + (Math.random() * 2 - 1))
           ),
           lng: Math.max(
             0,
-            Math.min(100, turtlebots.lng + Math.random() * 10 - 5)
+            Math.min(100, turtlebot.lng + (Math.random() * 2 - 1))
           ),
         }))
       );
-    }, 1000);
+    };
+
+    const timerId = setInterval(moveMarkers, 50);
     return () => clearInterval(timerId);
   }, []);
 

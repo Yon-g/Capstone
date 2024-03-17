@@ -18,10 +18,11 @@ const Marker = ({ lat, lng }) => {
     <div
       style={{
         position: "absolute",
-        left: `${position.x}%`,
-        top: `${position.y}%`,
-        transform: `translate(0%, 0%)`,
+        left: `${lat}%`,
+        top: `${lng}%`,
+        transform: `translate(-50%, -50%)`,
         fontSize: "2rem",
+        transition: "left 0.5s linear, top 0.5s linear",
       }}
     >
       📍
@@ -39,7 +40,11 @@ const MapComponet = ({ turtlebots }) => {
       ></img>
       {/* turtlebots 배열을 순회하며 Marker 컴포넌트를 렌더링 */}
       {turtlebots.map((turtlebot) => (
-        <Marker key={turtlebot.id} x={turtlebot.lat} y={turtlebot.lng}></Marker>
+        <Marker
+          key={turtlebot.id}
+          lat={turtlebot.lat}
+          lng={turtlebot.lng}
+        ></Marker>
       ))}
     </StyledMapContainer>
   );
