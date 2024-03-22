@@ -7,6 +7,8 @@ from PIL import Image
 
 
 app = Flask(__name__)
+
+#CORS정책 비활성화
 cors = CORS(app, resources={r"/*/": {"origins": "*"}})
 
 
