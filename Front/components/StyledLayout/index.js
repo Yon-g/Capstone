@@ -8,12 +8,14 @@ import MapComponet from "../MapComponet";
 export default function LayoutComponet() {
   const [turtlebots, setTurtlebots] = useState([]);
 
-  /* 임시 사용하는 더미 데이터 */
+  /* 테스트를 위한 useEffect() */
   useEffect(() => {
+    /* 임시 사용하는 더미 데이터 */
     const initializeDummyData = () => {
       const dummyTurtlebots = [
         { id: 1, name: "Turtlebot 1", lat: 50, lng: 50 },
         { id: 2, name: "Turtlebot 2", lat: 50, lng: 50 },
+        { id: 3, name: "Turtlebot 3", lat: 50, lng: 50 },
       ];
       setTurtlebots(dummyTurtlebots);
     };
