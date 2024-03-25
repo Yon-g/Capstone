@@ -3,7 +3,7 @@ import { StyledMapContainer } from "./styles";
 import Marker from "../Marker";
 
 const MapComponet = ({ turtlebots }) => {
-  const imageUrl = 'http://localhost:5000/map-image';
+  const imageUrl = "http://localhost:5000/map-image";
   return (
     <StyledMapContainer>
       <img
