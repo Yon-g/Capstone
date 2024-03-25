@@ -98,7 +98,10 @@ def home():
 def socket_Pos():
     global pos
     # print(pos)
-    return jsonify({'X':pos[0],'Y':pos[1],'ORT':pos[2]})
+    return jsonify([{'id':1,'x':pos[0],'y':pos[1],'heading':pos[2]},
+                    {'id':2,'x':pos[3],'y':pos[4],'heading':pos[5]},
+                    {'id':3,'x':pos[6],'y':pos[7],'heading':pos[8]},
+                    {'id':4,'x':pos[9],'y':pos[10],'heading':pos[11]}])
 
 @app.route('/map-image/')
 def serve_map_image():
