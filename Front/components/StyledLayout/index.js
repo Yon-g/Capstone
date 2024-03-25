@@ -12,9 +12,9 @@ export default function LayoutComponet() {
     // 초기 더미 데이터로 마커 위치 설정
     // const initializeDummyData = () => {
     //   const dummyTurtlebots = [
-    //     { id: 1, lat: 50, lng: 50, heading: 0 },
-    //     { id: 2, lat: 50, lng: 50, heading: 0 },
-    //     { id: 3, lat: 50, lng: 50, heading: 0 },
+    //     { id: 1, x: 50, y: 50, heading: 0 },
+    //     { id: 2, x: 50, y: 50, heading: 0 },
+    //     { id: 3, x: 50, y: 50, heading: 0 },
     //   ];
     //   setTurtlebots(dummyTurtlebots);
     // };
