@@ -18,6 +18,7 @@ const MapComponet = ({ turtlebots }) => {
           key={turtlebot.id}
           lat={turtlebot.lat}
           lng={turtlebot.lng}
+          heading={turtlebot.heading}
         ></Marker>
       ))}
     </StyledMapContainer>
