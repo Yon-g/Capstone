@@ -9,13 +9,14 @@ from PIL import Image
 import random
 
 
+#192.168.0.130
 app = Flask(__name__)
 
 #CORS정책 비활성화
 cors = CORS(app, resources={r"/*/": {"origins": "*"}})
 
 
-pos = [0.00,0.00,0.00]
+pos = [0.00] * 12
 order = ""
 
 #ROS to Flask, 좌표값 수신 코드
@@ -33,17 +34,14 @@ def serverClient_getPos():
         os._exit(1)
 
     while True:
-        data = client_sock.recv(32)
+        data = client_sock.recv(128)
         data.decode('utf-8')
         data = str(data)
-        x,y,ort = data[2:-1].split()
-        x = float(x)
-        y = float(y)
-        ort = float(ort)
-
-        pos[0] = x
-        pos[1] = y
-        pos[2] = ort
+        print(data)
+        lst = list(data[2:-1].split())
+        
+        for i in range(len(lst)):
+            pos[i] = lst[i]
 
         #자체적으로 인터벌 유지
         time.sleep(0.3)
@@ -115,8 +113,8 @@ def users():
 if __name__ == '__main__':
     # thread = threading.Thread(target=serverClient_getImage)
     # thread.start()
-    # thread = threading.Thread(target=serverClient_getPos)
-    # thread.start()
-    thread = threading.Thread(target=changingGlobal)
+    thread = threading.Thread(target=serverClient_getPos)
     thread.start()
+    # thread = threading.Thread(target=changingGlobal)
+    # thread.start()
     app.run('0.0.0.0',port=5000,debug=False)
