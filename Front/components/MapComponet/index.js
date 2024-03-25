@@ -3,10 +3,12 @@ import { StyledMapContainer } from "./styles";
 import Marker from "../Marker";
 
 const MapComponet = ({ turtlebots }) => {
+  const imageUrl = 'http://localhost:5000/map-image';
   return (
     <StyledMapContainer>
       <img
-        src="./images/map_rotate.png"
+        //src="./images/map_rotate.png"
+        src={imageUrl}
         alt="SLAM MAP"
         style={{ position: "relative" }}
       ></img>

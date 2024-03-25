@@ -1,9 +1,12 @@
 from flask import Flask, render_template, jsonify, request, Response
+from flask import send_from_directory
+
 from flask_cors import CORS
 from socket import *
 import threading, io
 import os, time, json
 from PIL import Image
+import random
 
 
 app = Flask(__name__)
@@ -79,12 +82,14 @@ def serverClient_getImage():
     client_sock.close()
     # print("끝남")
 
-# def changingGlobal():
-#     global pos
-#     while(True):
-#         for i in range(3):
-#             pos[0] += (i+1)
-#         time.sleep(1)
+def changingGlobal():
+    global pos
+    while(True):
+        pos[0] = random.randint(0,100)
+        pos[1] = random.randint(0,100)
+        pos[2] = random.randint(0,100)
+        time.sleep(0.5)
+
 
 @app.route("/")
 def home():
@@ -97,6 +102,10 @@ def socket_Pos():
     # print(pos)
     return jsonify({'X':pos[0],'Y':pos[1],'ORT':pos[2]})
 
+@app.route('/map-image/')
+def serve_map_image():
+    return send_from_directory('static', 'map.png')
+
 @app.route('/users/')
 def users():
 	# users 데이터를 Json 형식으로 반환한다
@@ -106,6 +115,8 @@ def users():
 if __name__ == '__main__':
     # thread = threading.Thread(target=serverClient_getImage)
     # thread.start()
-    thread = threading.Thread(target=serverClient_getPos)
+    # thread = threading.Thread(target=serverClient_getPos)
+    # thread.start()
+    thread = threading.Thread(target=changingGlobal)
     thread.start()
     app.run('0.0.0.0',port=5000,debug=False)

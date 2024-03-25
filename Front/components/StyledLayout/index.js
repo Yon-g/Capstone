@@ -6,7 +6,13 @@ import Content from "../Content";
 import MapComponet from "../MapComponet";
 
 export default function LayoutComponet() {
+  
+
   const [turtlebots, setTurtlebots] = useState([]);
+  
+  const [X, setX] = useState(0);
+  const [Y, setY] = useState(0);
+  const [ORT, setORT] = useState(0);
 
   /* 테스트를 위한 useEffect() */
   useEffect(() => {
@@ -38,22 +44,24 @@ export default function LayoutComponet() {
       );
     };
 
-    const timerId = setInterval(moveMarkers, 50);
+    const timerId = setInterval(moveMarkers, 100);
     return () => clearInterval(timerId);
   }, []);
 
   /* 
   
   임시 주석 -> api 확인후 주석 제거 예정 
-
+*/
   useEffect(() => {
     // Turtlebot의 위치 정보를 비동기적으로 가져오는 함수
     const fetchTurtlebotPositions = async () => {
       //Turtlebot의 위치 정보를 가져오는 코드 작성 (API 호출)
       try {
-        const response = await fetch("api_endpoint");
+        const response = await fetch('http://localhost:5000/socket_Pos');
         const data = await response.json();
-        setTurtlebots(data);
+        setX(data.X);
+        setY(data.Y);
+        setORT(data.ORT)
       } catch (error) {
         console.error("TurtleBot position feching error: ", error);
         //에러 핸들러 로직 추가
@@ -61,14 +69,21 @@ export default function LayoutComponet() {
     };
 
     fetchTurtlebotPositions();
-    const intervalId = setInterval(fetchTurtlebotPositions, 5000);
+    const intervalId = setInterval(fetchTurtlebotPositions, 100);
 
     return () => clearInterval(intervalId);
   }, []);
-    */
+  
+  //
   return (
     <StyledLayout>
-      <Header></Header>
+        <div>
+      <h4>Position Now</h4>
+      <h5>X : {X}</h5>
+      <h5>Y : {Y}</h5>
+      <h5>ORT : {ORT}</h5>
+        </div>
+      
       <Content></Content>
       <MapComponet turtlebots={turtlebots}></MapComponet>
       <FooterComponents></FooterComponents>
