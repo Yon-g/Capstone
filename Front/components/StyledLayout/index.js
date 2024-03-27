@@ -4,6 +4,7 @@ import Header from "../Header";
 import FooterComponents from "../Footer";
 import Content from "../Content";
 import MapComponet from "../MapComponet";
+import PresetModal from "../Modal";
 
 export default function LayoutComponet() {
   const [turtlebots, setTurtlebots] = useState([]);
@@ -12,8 +13,8 @@ export default function LayoutComponet() {
   useEffect(() => {
     const initializeDummyData = () => {
       const dummyTurtlebots = [
-        { id: 1, name: "Turtlebot 1", lat: 50, lng: 50 },
-        { id: 2, name: "Turtlebot 2", lat: 50, lng: 50 },
+        { id: 1, name: "Turtlebot 1", lat: 50, lng: 50, rotation: 20 },
+        { id: 2, name: "Turtlebot 2", lat: 50, lng: 20, rotation: 90 },
       ];
       setTurtlebots(dummyTurtlebots);
     };
@@ -40,30 +41,25 @@ export default function LayoutComponet() {
     return () => clearInterval(timerId);
   }, []);
 
-  /* 
-  
-  임시 주석 -> api 확인후 주석 제거 예정 
+  // useEffect(() => {
+  //   // Turtlebot의 위치 정보를 비동기적으로 가져오는 함수
+  //   const fetchTurtlebotPositions = () => {
+  //     fetch('서버주소')
+  //       .then(response => {
+  //         if (!response.ok) {
+  //           throw new Error('Network response was not ok');
+  //         }
+  //         return response.json();
+  //       })
+  //       .then(jsonData => console.log(jsonData)) // 서버로부터 받은 JSON 형식의 데이터 임시 테스트용
+  //       // .then(jsonData => setTurtlebots(jsonData)) // 서버로부터 받은 JSON형식의 데이터를 Turtlebots state에 저장
+  //       .catch(error => console.error('TurtleBot position feching error:', error));
+  //   }
 
-  useEffect(() => {
-    // Turtlebot의 위치 정보를 비동기적으로 가져오는 함수
-    const fetchTurtlebotPositions = async () => {
-      //Turtlebot의 위치 정보를 가져오는 코드 작성 (API 호출)
-      try {
-        const response = await fetch("api_endpoint");
-        const data = await response.json();
-        setTurtlebots(data);
-      } catch (error) {
-        console.error("TurtleBot position feching error: ", error);
-        //에러 핸들러 로직 추가
-      }
-    };
+  //   // 일정시간(0.05초)마다 fetchDataPeriodically 함수 실행
+  //   setInterval(fetchTurtlebotPositions, 50);
+  // });
 
-    fetchTurtlebotPositions();
-    const intervalId = setInterval(fetchTurtlebotPositions, 5000);
-
-    return () => clearInterval(intervalId);
-  }, []);
-    */
   return (
     <StyledLayout>
       <Header></Header>
