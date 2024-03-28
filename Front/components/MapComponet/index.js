@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { StyledMapContainer } from "./styles";
+<<<<<<< HEAD
 
 /* Marker 스타일링 */
 const Marker = ({ lat, lng, rotation }) => {
@@ -38,10 +39,17 @@ const Marker = ({ lat, lng, rotation }) => {
 
 const MapComponet = ({ turtlebots }) => {
   
+=======
+import Marker from "../Marker";
+
+const MapComponet = ({ turtlebots }) => {
+  const imageUrl = "http://localhost:5000/map-image";
+>>>>>>> 6c29860c0aef8a2edb22ba18464c9d3469bdedff
   return (
     <StyledMapContainer>
       <img
-        src="./images/map_rotate.png"
+        //src="./images/map_rotate.png"
+        src={imageUrl}
         alt="SLAM MAP"
         style={{ position: "relative" }}
       ></img>
@@ -51,7 +59,11 @@ const MapComponet = ({ turtlebots }) => {
           key={turtlebot.id}
           lat={turtlebot.lat}
           lng={turtlebot.lng}
+<<<<<<< HEAD
           rotation={turtlebot.rotation}
+=======
+          heading={turtlebot.heading}
+>>>>>>> 6c29860c0aef8a2edb22ba18464c9d3469bdedff
         ></Marker>
       ))}
     </StyledMapContainer>
