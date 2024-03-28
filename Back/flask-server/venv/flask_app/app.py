@@ -17,7 +17,7 @@ cors = CORS(app, resources={r"/*/": {"origins": "*"}})
 
 
 pos = [0.00] * 12
-order = ""
+order = [0]
 
 #ROS to Flask, 좌표값 수신 코드
 def serverClient_getPos():
@@ -33,6 +33,31 @@ def serverClient_getPos():
         print('2. 서버 실행 여부를 확인하십시오.')
         os._exit(1)
 
+    #서버 접속 후 대기
+    msg = client_sock.recv(128)
+    client_sock.send('접속완료, 맵 주세요'.encode('utf-8'))
+
+    #맵 파일 수신
+    imgSize = client_sock.recv(1024)
+    Size = int(imgSize.decode('utf-8'))
+    print(Size)
+    client_sock.send('이미지 크기 확인, 이미지 주세요'.encode('utf-8'))
+
+    #사전에 전달받은 이미지 파일 크기만큼의 메시지(바이트) 수신
+    image_data = b''
+    while True:
+        data = client_sock.recv(1024)
+        image_data += data
+        if len(image_data) == Size : break
+
+    print('*'*100)
+    #Image라이브러리 통해서 로컬 directory에 저장
+    image = Image.open(io.BytesIO(image_data))
+    image.save('static/mapImage.png','png')
+    client_sock.send('사진감사요, 센서값 주세요'.encode('utf-8'))
+
+    #터틀봇 좌표 수신 및 명령 전달
+
     while True:
         data = client_sock.recv(128)
         data.decode('utf-8')
@@ -44,9 +69,9 @@ def serverClient_getPos():
             pos[i] = lst[i]
 
         #자체적으로 인터벌 유지
-        time.sleep(0.3)
+        time.sleep(0.1)
         #client2server msg send
-        client_sock.send('좌표감사요'.encode('utf-8'))
+        client_sock.send(str(order[0]).encode('utf-8'))
 
 #ROS to Flask, 이미지 수신
 def serverClient_getImage():
@@ -61,22 +86,6 @@ def serverClient_getImage():
         print('2. 서버 실행 여부를 확인하십시오.')
         os._exit(1)
     
-    imgSize = client_sock.recv(1024)
-    Size = int(imgSize.decode('utf-8'))
-    print(Size)
-
-    image_data = b''
-    #사전에 전달받은 이미지 파일 크기만큼의 메시지(바이트) 수신
-    while True:
-        data = client_sock.recv(1024)
-        image_data += data
-        if len(image_data) == Size : break
-
-    print('*'*100)
-    #Image라이브러리 통해서 로컬 directory에 저장
-    image = Image.open(io.BytesIO(image_data))
-    image.save('mapImage.png','png')
-    client_sock.send('사진감사요'.encode('utf-8'))
     client_sock.close()
     # print("끝남")
 
@@ -85,7 +94,7 @@ def changingGlobal():
     while(True):
         for i in range(12):
             pos[i] = random.randint(0,100)
-        time.sleep(0.1)
+        time.sleep(10)
 
 
 @app.route("/")
@@ -97,7 +106,10 @@ def home():
 def socket_Pos():
     global pos
     # print(pos)
-    return jsonify({'X':pos[0],'Y':pos[1],'ORT':pos[2]})
+    return jsonify([{'id':1,'x':pos[0],'y':pos[1],'heading':pos[2]},
+                    {'id':2,'x':pos[3],'y':pos[4],'heading':pos[5]},
+                    {'id':3,'x':pos[6],'y':pos[7],'heading':pos[8]},
+                    {'id':4,'x':pos[9],'y':pos[10],'heading':pos[11]}])
 
 @app.route('/map-image/')
 def serve_map_image():
