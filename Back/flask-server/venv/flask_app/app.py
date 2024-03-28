@@ -128,6 +128,7 @@ def socket_Pos():
 @app.route('/map-image/')
 def serve_map_image():
     return send_from_directory('static', 'map.png')
+
 @app.route('/users/')
 def users():
 	# users 데이터를 Json 형식으로 반환한다
