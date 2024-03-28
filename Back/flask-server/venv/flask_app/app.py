@@ -3,6 +3,7 @@ from flask import send_from_directory
 
 from flask_cors import CORS
 from socket import *
+from collections import deque
 import threading, io
 import os, time, json
 from PIL import Image
@@ -17,7 +18,7 @@ cors = CORS(app, resources={r"/*/": {"origins": "*"}})
 
 
 pos = [0.00] * 12
-order = [0]
+order = []
 
 #ROS to Flask, 좌표값 수신 코드
 def serverClient_getPos():
@@ -71,7 +72,7 @@ def serverClient_getPos():
         #자체적으로 인터벌 유지
         time.sleep(0.1)
         #client2server msg send
-        client_sock.send(str(order[0]).encode('utf-8'))
+        client_sock.send(str(order[-1]).encode('utf-8'))
 
 #ROS to Flask, 이미지 수신
 def serverClient_getImage():
@@ -100,6 +101,18 @@ def changingGlobal():
 @app.route("/")
 def home():
     return render_template("index.html")
+
+
+#Flask 서버에서 클릭 좌표를 사용하여 POST 요청을 처리할 새경로 정의
+
+@app.route('/api/click-coordinates', methods=['POST'])
+def handle_click_coordinates():
+    global order
+    data = request.json
+    print("Coordinates received:", data)
+    order.append(data)
+    
+    return jsonify({"status": "success", "message": "Coordinates received"}), 200
 
 #전역변수를 사용해 실시간 웹소켓 통신으로 전달받은 좌표값을 json데이터로 반환
 @app.route("/socket_Pos/",methods=['GET'])
