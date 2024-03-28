@@ -93,9 +93,10 @@ def serverClient_getImage():
 def changingGlobal():
     global pos
     while(True):
-        for i in range(12):
-            pos[i] = random.randint(0,100)
-        time.sleep(0.2)
+        pos[0] = random.randint(0,100)
+        pos[1] = random.randint(0,100)
+        pos[2] = random.randint(0,100)
+        time.sleep(0.5)
 
 
 @app.route("/")
@@ -137,8 +138,8 @@ def users():
 if __name__ == '__main__':
     # thread = threading.Thread(target=serverClient_getImage)
     # thread.start()
-    thread = threading.Thread(target=serverClient_getPos)
-    thread.start()
-    # thread = threading.Thread(target=changingGlobal)
+    # thread = threading.Thread(target=serverClient_getPos)
     # thread.start()
+    thread = threading.Thread(target=changingGlobal)
+    thread.start()
     app.run('0.0.0.0',port=5000,debug=False)
