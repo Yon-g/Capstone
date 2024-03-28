@@ -11,5 +11,6 @@ export const StyledFooter = styled(Layout.Footer)`
 `;
 
 export const StyledMoveButton = styled(Button)`
-  font-size: 1.2em;
+  // font-size: 1.2em;
+  margin-top: 8px;
 `;
