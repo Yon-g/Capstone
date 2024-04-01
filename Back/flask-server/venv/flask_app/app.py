@@ -80,6 +80,7 @@ def websocket_communicate():
         #자체적으로 인터벌 유지
         time.sleep(0.1)
         
+        print(order[0])
         client_sock.send(str(order[0]).encode('utf-8'))
         if order[0] < 0 : return
         
@@ -99,26 +100,26 @@ def home():
 
 
 #Flask 서버에서 클릭 좌표를 사용하여 POST 요청을 처리할 새경로 정의
-@app.route('/api/click-coordinates', methods=['POST'])
+@app.route('/user_order', methods=['POST'])
 def handle_click_coordinates():
     global order
-    data = request.json
+    data = request.json['option']
 
-    print("Coordinates received:", data)
+    print("Coordinates received:", str(data))
 
-    # order[0] = str(data)
+    order[0] = str(data)
     return jsonify({"status": "success", "message": "Coordinates received"}), 200
 
 #전역변수를 사용해 실시간 웹소켓 통신으로 전달받은 좌표값을 json데이터로 반환
 @app.route("/socket_Pos/",methods=['GET'])
 def socket_Pos():
-    global pos, NumOfChair
+    global pos, NumOfChair, order
     status_pos = []
 
     #여기도 수정 필요함 => status + pos 형태로
     #status_pos.append(chair_status[0])
 
-
+    print(order)
     for i in range(NumOfChair):
         status_pos.append({'id': i+1,'x':pos[3*i],'y':pos[3*i + 1],'heading':pos[3*i + 2]})
 

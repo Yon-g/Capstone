@@ -9,7 +9,7 @@ export default function PresetModal(props) {
         setLoading(true);
         try {
             // 여기에 서버로 데이터를 전송하는 코드를 작성합니다.
-            const response = await fetch("http://localhost:5000/", {
+            const response = await fetch("http://localhost:5000/user_order", {
                 method: "POST", // 또는 서버에 맞는 메소드
                 headers: {
                     "Content-Type": "application/json",
