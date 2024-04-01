@@ -21,17 +21,21 @@ app = Flask(__name__)
 cors = CORS(app, resources={r"/*/": {"origins": "*"}})
 
 
-pos = [0.00] * (3 * NumOfChair)
-order = [0]
+Pos = [0.00] * (3 * NumOfChair) # {X, Y, Heading}
+Order = [0, "None"] # type, order_Msg
+Status = [""]
+
+# 0 : No Order Now
+# 1 : Yes order Now  
 
 #ROS to Flask, 좌표값 수신 코드
 def websocket_communicate():
-    global pos, order, Address, NumOfChair
+    global Pos, Order, Address, NumOfChair
 
     client_sock=socket(AF_INET, SOCK_STREAM)
 
     try:
-        client_sock.connect((Address['IP_webserver'], 8000)) #용원 ROS돌리는 IP, Port
+        client_sock.connect((Address['IP_ROS'], 8000)) #용원 ROS돌리는 IP, Port
 
     except ConnectionRefusedError:
         print('좌표 전송 서버에 연결할 수 없습니다.')
@@ -52,8 +56,8 @@ def websocket_communicate():
     #사전에 전달받은 이미지 파일 크기만큼의 메시지(바이트) 수신
     image_data = b''
     while True:
-        data = client_sock.recv(1024)
-        image_data += data
+        seperate = client_sock.recv(1024)
+        image_data += seperate
         if len(image_data) == Size : break
 
     print('*'*100)
@@ -66,62 +70,85 @@ def websocket_communicate():
 
     #터틀봇 좌표 수신 및 명령 전달
     while True:
-        data = client_sock.recv(128)
-        data.decode('utf-8')
-        data = str(data)
-        print(data)
+        msgFrmROS = client_sock.recv(128)
+        msgFrmROS.decode('utf-8')
+        msgFrmROS = str(msgFrmROS)
+        print(msgFrmROS)
 
         #작업 상태 + 좌표로 변경 필요함
-        lst = list(data[2:-1].split())
-        
+        rawData = list(msgFrmROS[2:-1].split())
+        # status = rawData[0]
         for i in range(NumOfChair * 3):
-            pos[i] = lst[i]
+            # pos[i] = rawData[i + 1]
+            Pos[i] = rawData[i]
+
+        msg2ROS = ''
+        msg2ROS += str(Order[0])
+        msg2ROS += str(Order[1])
+
+        # if status != Order[1] and status == "":
+        #     #Order배열초기화
+        #     Order[0] = 0
+        #     Order[1] = ""
+        #     Status[0] = "" 
+
+        # + ROS에서 최근 작업을 변수로 가지고 있고 자체적인 작업 상황(터틀봇이 이동 중인지, 명령 수행 중인지 여부)도 변수로 가지고 있어야
+        # 여기서 보내는 msg2ROS에 대해서 판단할 수 있음!!!!!!
 
         #자체적으로 인터벌 유지
         time.sleep(0.1)
-        
-        print(order[0])
-        client_sock.send(str(order[0]).encode('utf-8'))
-        if order[0] < 0 : return
-        
 
+        client_sock.send(msg2ROS).encode('utf-8')
+        
 def changingGlobal():
-    global pos
+    global Pos, NumOfChair
     while(True):
-        pos[0] = random.randint(0,100)
-        pos[1] = random.randint(0,100)
-        pos[2] = random.randint(0,100)
-        time.sleep(0.5)
-
+        for i in range(NumOfChair * 3):
+            Pos[i] = random.randint(100)
+        time.sleep(0.1)
 
 @app.route("/")
 def home():
     return render_template("index.html")
 
-
-#Flask 서버에서 클릭 좌표를 사용하여 POST 요청을 처리할 새경로 정의
+#Flask 서버에서 클릭 좌표를 사용하여 POST 요청을 처리할 새 경로 정의
 @app.route('/user_order', methods=['POST'])
 def handle_click_coordinates():
-    global order
-    data = request.json['option']
+    global Order, Status
+    user_order = request.json['option']
+    time_stamp = request.json['time']
 
-    print("Coordinates received:", str(data))
+    #react에서 post요청 직후에 modal, Order 버튼을 불가능하게 만들어야 함 + 작업수행중 글씨로 바꾸면 좋을듯? 
+    # (ex. 직전 명령이 아직 수행중입니다. 오랜시간 대기상태가 지속될 경우, 의자의 상태와 장애물 존재 여부를 확인하세요)
+    # + 동작 종료버튼을 만들자 => 터틀봇 전체 움직임 정지 
 
-    order[0] = str(data)
+    print("Order time :", time_stamp)
+    print("Coordinates received:", user_order)
+
+    #현재 작업 상태가 공백이 아니거나, 유저 명령이 작업 멈춰! 가 아니라면
+    if Status[0] != "" or user_order != "STOP":
+        #명령하달 실패 메시지 반환
+        return jsonify({"status": "fail", "message": "Your previous order is not finished yet"})
+
+    #작업 메시지 확인 시
+    Order[0] = 1
+    Order[1] = time_stamp + "||" + user_order
+
     return jsonify({"status": "success", "message": "Coordinates received"}), 200
 
 #전역변수를 사용해 실시간 웹소켓 통신으로 전달받은 좌표값을 json데이터로 반환
 @app.route("/socket_Pos/",methods=['GET'])
 def socket_Pos():
-    global pos, NumOfChair, order
+    global Pos, NumOfChair, Order, Status
     status_pos = []
 
     #여기도 수정 필요함 => status + pos 형태로
-    #status_pos.append(chair_status[0])
+    #status_pos.append({"status : Status[0]"})
 
-    print(order)
+    #react에서 직전에 보낸 명령을 기억해뒀다가
+    #여기서 보내는 status랑 비교해서 상태가 달라진 걸 확인할 수 있어야 함
     for i in range(NumOfChair):
-        status_pos.append({'id': i+1,'x':pos[3*i],'y':pos[3*i + 1],'heading':pos[3*i + 2]})
+        status_pos.append({'id': i+1,'x':Pos[3*i],'y':Pos[3*i + 1],'heading':Pos[3*i + 2]})
 
     return jsonify(status_pos)
 
