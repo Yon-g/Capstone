@@ -110,7 +110,6 @@ def home():
 def handle_click_coordinates():
     global Order, isWorking
     user_order = request.json['option']
-
     # react에서 post요청 직후에 modal, Order 버튼을 불가능하게 만들어야 함 + 작업수행중 글씨로 바꾸면 좋을듯? 
     # (ex. 직전 명령이 아직 수행중입니다. 오랜시간 대기상태가 지속될 경우, 의자의 상태와 장애물 존재 여부를 확인하세요)
     # + 동작 종료버튼을 만들자 => 터틀봇 전체 움직임 정지 
@@ -131,7 +130,6 @@ def handle_click_coordinates():
 def socket_Pos():
     global Pos, NumOfChair, Order, isWorking
     status_pos = []
-
     #react에서 직전에 보낸 명령을 기억해뒀다가
     #여기서 보내는 status랑 비교해서 상태가 달라진 걸 확인할 수 있어야 함
     for i in range(NumOfChair):
