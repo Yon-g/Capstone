@@ -22,15 +22,15 @@ cors = CORS(app, resources={r"/*/": {"origins": "*"}})
 
 
 Pos = [0.00] * (3 * NumOfChair) # {X, Y, Heading}
-Order = [0, "None"] # type, order_Msg
-Status = [""]
+Order = ["0"] # type, order_Msg
+isWorking = [False]
 
 # 0 : No Order Now
 # 1 : Yes order Now  
 
 #ROS to Flask, 좌표값 수신 코드
 def websocket_communicate():
-    global Pos, Order, Address, NumOfChair
+    global Pos, Order, Address, NumOfChair, isWorking
 
     client_sock=socket(AF_INET, SOCK_STREAM)
 
@@ -77,27 +77,21 @@ def websocket_communicate():
 
         #작업 상태 + 좌표로 변경 필요함
         rawData = list(msgFrmROS[2:-1].split())
-        # status = rawData[0]
         for i in range(NumOfChair * 3):
-            # pos[i] = rawData[i + 1]
-            Pos[i] = rawData[i]
+            Pos[i] = rawData[i + 1]
 
-        msg2ROS = ''
-        msg2ROS += str(Order[0])
-        msg2ROS += str(Order[1])
+        if rawData[0] == "0" and isWorking[0] :
+            isWorking[0] = False
+            Order[0] = "0"
 
-        # if status != Order[1] and status == "":
-        #     #Order배열초기화
-        #     Order[0] = 0
-        #     Order[1] = ""
-        #     Status[0] = "" 
+        msg2ROS = "0"
 
-        # + ROS에서 최근 작업을 변수로 가지고 있고 자체적인 작업 상황(터틀봇이 이동 중인지, 명령 수행 중인지 여부)도 변수로 가지고 있어야
-        # 여기서 보내는 msg2ROS에 대해서 판단할 수 있음!!!!!!
+        if not isWorking[0] and Order[0] != "0" :
+            msg2ROS = str(Order[0])
+            isWorking[0] = True
 
         #자체적으로 인터벌 유지
         time.sleep(0.1)
-
         client_sock.send(msg2ROS).encode('utf-8')
         
 def changingGlobal():
@@ -114,36 +108,32 @@ def home():
 #Flask 서버에서 클릭 좌표를 사용하여 POST 요청을 처리할 새 경로 정의
 @app.route('/user_order', methods=['POST'])
 def handle_click_coordinates():
-    global Order, Status
+    global Order, isWorking
     user_order = request.json['option']
-    time_stamp = request.json['time']
 
-    #react에서 post요청 직후에 modal, Order 버튼을 불가능하게 만들어야 함 + 작업수행중 글씨로 바꾸면 좋을듯? 
+    # react에서 post요청 직후에 modal, Order 버튼을 불가능하게 만들어야 함 + 작업수행중 글씨로 바꾸면 좋을듯? 
     # (ex. 직전 명령이 아직 수행중입니다. 오랜시간 대기상태가 지속될 경우, 의자의 상태와 장애물 존재 여부를 확인하세요)
     # + 동작 종료버튼을 만들자 => 터틀봇 전체 움직임 정지 
 
-    print("Order time :", time_stamp)
     print("Coordinates received:", user_order)
 
     #현재 작업 상태가 공백이 아니거나, 유저 명령이 작업 멈춰! 가 아니라면
-    if Status[0] != "" or user_order != "STOP":
+    if isWorking[0] or user_order != "4":
         #명령하달 실패 메시지 반환
         return jsonify({"status": "fail", "message": "Your previous order is not finished yet"})
-
+    
     #작업 메시지 확인 시
-    Order[0] = 1
-    Order[1] = time_stamp + "||" + user_order
-
+    Order[0] = user_order
     return jsonify({"status": "success", "message": "Coordinates received"}), 200
 
 #전역변수를 사용해 실시간 웹소켓 통신으로 전달받은 좌표값을 json데이터로 반환
 @app.route("/socket_Pos/",methods=['GET'])
 def socket_Pos():
-    global Pos, NumOfChair, Order, Status
+    global Pos, NumOfChair, Order, isWorking
     status_pos = []
 
     #여기도 수정 필요함 => status + pos 형태로
-    #status_pos.append({"status : Status[0]"})
+    status_pos.append({"status" : Order[0]})
 
     #react에서 직전에 보낸 명령을 기억해뒀다가
     #여기서 보내는 status랑 비교해서 상태가 달라진 걸 확인할 수 있어야 함
@@ -151,6 +141,11 @@ def socket_Pos():
         status_pos.append({'id': i+1,'x':Pos[3*i],'y':Pos[3*i + 1],'heading':Pos[3*i + 2]})
 
     return jsonify(status_pos)
+
+@app.route("/socket_order/",methods=['GET'])
+def socket_Order():
+    global Order
+    return jsonify({'order':Order[0]})
 
 @app.route('/map-image/')
 def serve_map_image():
