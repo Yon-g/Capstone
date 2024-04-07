@@ -143,7 +143,7 @@ def socket_Pos():
     status_pos = []
 
     #여기도 수정 필요함 => status + pos 형태로
-    #status_pos.append({"status : Status[0]"})
+    # status_pos.append({"status : Status[0]"})
 
     #react에서 직전에 보낸 명령을 기억해뒀다가
     #여기서 보내는 status랑 비교해서 상태가 달라진 걸 확인할 수 있어야 함
