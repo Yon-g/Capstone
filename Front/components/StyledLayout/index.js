@@ -9,17 +9,6 @@ export default function LayoutComponet() {
   const [turtlebots, setTurtlebots] = useState([]);
 
   useEffect(() => {
-    // 초기 더미 데이터로 마커 위치 설정
-    // const initializeDummyData = () => {
-    //   const dummyTurtlebots = [
-    //     { id: 1, x: 50, y: 50, heading: 0 },
-    //     { id: 2, x: 50, y: 50, heading: 0 },
-    //     { id: 3, x: 50, y: 50, heading: 0 },
-    //   ];
-    //   setTurtlebots(dummyTurtlebots);
-    // };
-    // initializeDummyData();
-
     // Turtlebot의 위치 정보를 비동기적으로 가져오는 함수
     const fetchTurtlebotPositions = async () => {
       try {
@@ -30,6 +19,7 @@ export default function LayoutComponet() {
           lat: turtlebot.x,
           lng: turtlebot.y,
           heading: turtlebot.heading,
+          status: turtlebot.status, //new status 속성 추가 => 현재 동작 진행 여부
         }));
 
         setTurtlebots(updatedTurtlebots);

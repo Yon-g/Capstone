@@ -116,13 +116,13 @@ def home():
 def handle_click_coordinates():
     global Order, Status
     user_order = request.json['option']
-    time_stamp = request.json['time']
+    #time_stamp = request.json['time']
 
     #react에서 post요청 직후에 modal, Order 버튼을 불가능하게 만들어야 함 + 작업수행중 글씨로 바꾸면 좋을듯? 
     # (ex. 직전 명령이 아직 수행중입니다. 오랜시간 대기상태가 지속될 경우, 의자의 상태와 장애물 존재 여부를 확인하세요)
     # + 동작 종료버튼을 만들자 => 터틀봇 전체 움직임 정지 
 
-    print("Order time :", time_stamp)
+    #print("Order time :", time_stamp)
     print("Coordinates received:", user_order)
 
     #현재 작업 상태가 공백이 아니거나, 유저 명령이 작업 멈춰! 가 아니라면
@@ -132,7 +132,7 @@ def handle_click_coordinates():
 
     #작업 메시지 확인 시
     Order[0] = 1
-    Order[1] = time_stamp + "||" + user_order
+    #Order[1] = time_stamp + "||" + user_order
 
     return jsonify({"status": "success", "message": "Coordinates received"}), 200
 
