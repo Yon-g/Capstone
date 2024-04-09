@@ -10,6 +10,8 @@ See Wikipedia article (https://en.wikipedia.org/wiki/A*_search_algorithm)
 import math
 import random
 import matplotlib.pyplot as plt
+import numpy as np
+from PIL import Image
 
 from itertools import permutations
 
@@ -239,7 +241,13 @@ def isSafe(x1,y1,x2,y2,radius):
     else : return True
 
 def main():
+# def main(STARTS:list,GOALS:list)->list:
     print(__file__ + " start!!")
+    imp_path = "mapImage.png"
+    mapImg = Image.open(imp_path)
+    mapArray = np.array(mapImg)
+
+    print(mapArray.shape)
 
     # start and goal position
     # sx = 30.0  # [m]
@@ -397,7 +405,16 @@ def main():
             plt.plot(paths[best][i][0], paths[best][i][1], colors[i])
             plt.pause(0.0005)
         plt.show()
-        
+    
+    selected_path = []
+    for i in range(num_robot):
+        pathOfEachBot = []
+        for n in range(len(paths[best][i][0])):
+            xPos, yPos = paths[best][i][0][n],paths[best][i][1][n]
+            pathOfEachBot.append([xPos,yPos])
+        selected_path.append(reversed(pathOfEachBot))
+
+    return selected_path
 
 if __name__ == '__main__':
     main()
