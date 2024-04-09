@@ -12,6 +12,8 @@ import random
 import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
+import os
+import csv
 
 from itertools import permutations
 
@@ -240,14 +242,30 @@ def isSafe(x1,y1,x2,y2,radius):
     if square_distance <= (2*radius)**2 : return False
     else : return True
 
-def main():
-# def main(STARTS:list,GOALS:list)->list:
-    print(__file__ + " start!!")
-    imp_path = "mapImage.png"
-    mapImg = Image.open(imp_path)
+def SLAM_TO_Array(source = "relative path of map image file"):
+    absolute_path = os.path.dirname(os.path.realpath(__file__))
+    img_path = absolute_path + "/" + source
+    mapImg = Image.open(img_path)
+    mapImg.show()
     mapArray = np.array(mapImg)
+    mapArrayStr = []
 
-    print(mapArray.shape)
+    for i in range(mapArray.shape[0]):
+        line = []
+        for j in range(mapArray.shape[1]):
+            line.append(str(mapArray[i][j]))
+        mapArrayStr.append(line)
+
+    # print(mapArrayStr)
+
+    #csv파일로 저장
+    # with open(absolute_path+"/"+'arrToTxt.csv',"w") as file:
+    #     writer = csv.writer(file)
+    #     writer.writerows(mapArrayStr)
+
+def run():
+# def run(STARTS:list,GOALS:list)->list:
+    print(__file__ + " start!!")
 
     # start and goal position
     # sx = 30.0  # [m]
@@ -259,7 +277,6 @@ def main():
     sy = []
     gx = []
     gy = []
-
     # gx = [100.0, 100.0, 50.0, 150.0]
     # gy = [50.0, 150.0, 100.0, 100.0]
 
@@ -407,6 +424,7 @@ def main():
         plt.show()
     
     selected_path = []
+
     for i in range(num_robot):
         pathOfEachBot = []
         for n in range(len(paths[best][i][0])):
@@ -416,5 +434,5 @@ def main():
 
     return selected_path
 
-if __name__ == '__main__':
-    main()
+# if __name__ == '__main__':
+run()
