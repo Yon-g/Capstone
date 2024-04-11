@@ -24,13 +24,14 @@ cors = CORS(app, resources={r"/*/": {"origins": "*"}})
 Pos = [0.00] * (3 * NumOfChair) # {X, Y, Heading}
 Order = ["0"] # type, order_Msg
 isWorking = [False]
+SystemIsOn = False
 
 # 0 : No Order Now
 # 1 : Yes order Now  
 
 #ROS to Flask, 좌표값 수신 코드
 def websocket_communicate():
-    global Pos, Order, Address, NumOfChair, isWorking
+    global Pos, Order, Address, NumOfChair, isWorking, SystemIsOn
 
     client_sock=socket(AF_INET, SOCK_STREAM)
 
@@ -42,8 +43,7 @@ def websocket_communicate():
         print('1. 서버의 ip주소와 포트번호가 올바른지 확인하십시오.')
         print('2. 서버 실행 여부를 확인하십시오.')
         os._exit(1)
-
-    #서버 접속 후 대기
+    
     msg = client_sock.recv(128)
     client_sock.send('Connection Success'.encode('utf-8'))
 
@@ -53,7 +53,7 @@ def websocket_communicate():
     print(Size)
     client_sock.send('Img Size recieved'.encode('utf-8'))
 
-    #사전에 전달받은 이미지 파일 크기만큼의 메시지(바이트) 수신
+    # #사전에 전달받은 이미지 파일 크기만큼의 메시지(바이트) 수신
     image_data = b''
     while True:
         seperate = client_sock.recv(1024)
@@ -67,6 +67,7 @@ def websocket_communicate():
     image.save('static/mapImage.png','png')
 
     client_sock.send('Map Image received'.encode('utf-8'))
+    SystemIsOn = True
 
     #터틀봇 좌표 수신 및 명령 전달
     while True:
@@ -80,19 +81,30 @@ def websocket_communicate():
         for i in range(NumOfChair * 3):
             Pos[i] = rawData[i + 1]
 
-        if rawData[0] == "0" and isWorking[0] :
+        msg2ROS = "0"
+
+        #작업종료시
+        if rawData[0] == "8" :
             isWorking[0] = False
             Order[0] = "0"
 
-        msg2ROS = "0"
+        #작업시작시
+        if rawData[0] == "7" :
+            isWorking[0] = True
+
+        #작업시작, 종료에 따라 리액트에서 받는 Order가 달라지게 되는데
+        #그때 어떻게 동작할지 결정 필요
+        #제대로 되게 해야됨
 
         if not isWorking[0] and Order[0] != "0" :
             msg2ROS = str(Order[0])
-            isWorking[0] = True
+        
+        if Order[0] == "4" :
+            msg2ROS = str(Order[0])
 
         #자체적으로 인터벌 유지
         time.sleep(0.1)
-        client_sock.send(msg2ROS).encode('utf-8')
+        client_sock.send(msg2ROS.encode('utf-8'))
         
 def changingGlobal():
     global Pos, NumOfChair
@@ -116,14 +128,17 @@ def handle_click_coordinates():
     # + 동작 종료버튼을 만들자 => 터틀봇 전체 움직임 정지 
 
     print("Coordinates received:", user_order)
-
+    print(isWorking[0], user_order)
     #현재 작업 상태가 공백이 아니거나, 유저 명령이 작업 멈춰! 가 아니라면
-    if isWorking[0] or user_order != "4":
+    if isWorking[0] and user_order != '4':
         #명령하달 실패 메시지 반환
         return jsonify({"status": "fail", "message": "Your previous order is not finished yet"})
     
     #작업 메시지 확인 시
     Order[0] = user_order
+    print("*" * 100)
+    print(Order[0])
+    print("*" * 100)
     return jsonify({"status": "success", "message": "Coordinates received"}), 200
 
 #전역변수를 사용해 실시간 웹소켓 통신으로 전달받은 좌표값을 json데이터로 반환
@@ -151,9 +166,8 @@ def serve_map_image():
 #MAIN
 if __name__ == '__main__':
     # thread = threading.Thread(target=serverClient_getImage)
-    # thread.start()
-    # thread = threading.Thread(target=websocket_communicate)
-    # thread.start()
-    thread = threading.Thread(target=changingGlobal)
+    thread = threading.Thread(target=websocket_communicate)
+    # thread = threading.Thread(target=changingGlobal)
     thread.start()
-    app.run('0.0.0.0',port=5000,debug=False)
+    if SystemIsOn :
+        app.run('0.0.0.0',port=5000,debug=False)
