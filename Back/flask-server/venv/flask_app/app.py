@@ -146,7 +146,7 @@ def socket_Order():
 
 @app.route('/map-image/')
 def serve_map_image():
-    return send_from_directory('static', 'map.png')
+    return send_from_directory('static', 'mapImage.png')
 
 #MAIN
 if __name__ == '__main__':
