@@ -256,17 +256,26 @@ def SLAM_TO_Array(source = "relative path of map image file"):
             line.append(str(mapArray[i][j]))
         mapArrayStr.append(line)
 
-    # print(mapArrayStr)
+    mapInt = [[0 for _ in range(len(mapArrayStr[0]))]for _ in range(len(mapArrayStr))]
 
-    #csv파일로 저장
-    # with open(absolute_path+"/"+'arrToTxt.csv',"w") as file:
-    #     writer = csv.writer(file)
-    #     writer.writerows(mapArrayStr)
+    for i in range(len(mapArrayStr)):
+        for j in range(len(mapArrayStr[0])):
+            if mapArrayStr[i][j] != '254' : mapInt[i][j] = 0
+            else : mapInt[i][j] = 1
+
+    #mapInt 배열에서 1은 갈 수 있는 곳, 0은 갈 수 없는 곳
+
+    # csv파일로 저장
+    with open(absolute_path+"/"+'MAP2arr.csv',"w") as file:
+        writer = csv.writer(file)
+        writer.writerows(mapInt)
+
+    return mapInt
 
 def run():
 # def run(STARTS:list,GOALS:list)->list:
     print(__file__ + " start!!")
-
+    mapInt = SLAM_TO_Array("static/1.pgm")
     # start and goal position
     # sx = 30.0  # [m]
     # sy = 30.0  # [m]
@@ -282,20 +291,20 @@ def run():
 
     start = []
     while len(start) < 4:
-        tx,ty = random.randint(20,180), random.randint(20,180)
-        if 50 < tx < 150 or 50 < ty < 150 : continue
+        ty,tx = random.randint(0,len(mapInt[0])-1), random.randint(0,len(mapInt)-1)
+        if mapInt[tx][ty] == 0 : continue
         if (tx,ty) in start : continue
         start.append((tx,ty))
-    
+
     for x,y in start :
         sx.append(x)
         sy.append(y)
 
     goal = []
     while len(goal) < 4:
-        tx,ty = random.randint(20,180), random.randint(20,180)
-        if 50 < tx < 150 or 50 < ty < 150 : continue
-        if (tx,ty) in goal or (tx,ty) in start : continue
+        ty,tx = random.randint(0,len(mapInt[0])-1), random.randint(0,len(mapInt)-1)
+        if mapInt[tx][ty] == 0 : continue
+        if (tx,ty) in start or (tx,ty) in goal : continue
         goal.append((tx,ty))
     
     for x,y in goal :
@@ -303,46 +312,52 @@ def run():
         gy.append(y)
 
 
-    grid_size = 5.0  # [m]
-    robot_radius = 15.0  # [m]
+    grid_size = 3.0  # [m]
+    robot_radius = 1.0  # [m]
 
-    CrashWeight = 3.0
+    CrashWeight = 5.0
 
     num_robot = 4
 
     # set obstacle positions
     ox, oy = [], []
-    for i in range(0,201):
-        ox.append(i)
-        oy.append(0)
+    # for i in range(0,201):
+    #     ox.append(i)
+    #     oy.append(0)
 
-    for i in range(0,201):
-        ox.append(0)
-        oy.append(i)
+    # for i in range(0,201):
+    #     ox.append(0)
+    #     oy.append(i)
 
-    for i in range(0,201):
-        ox.append(200)
-        oy.append(i)
+    # for i in range(0,201):
+    #     ox.append(200)
+    #     oy.append(i)
 
-    for i in range(0,201):
-        ox.append(i)
-        oy.append(200)
+    # for i in range(0,201):
+    #     ox.append(i)
+    #     oy.append(200)
 
-    for i in range(70,131):
-        ox.append(i)
-        oy.append(70)
+    # for i in range(70,131):
+    #     ox.append(i)
+    #     oy.append(70)
 
-    for i in range(70,131):
-        ox.append(70)
-        oy.append(i)
+    # for i in range(70,131):
+    #     ox.append(70)
+    #     oy.append(i)
 
-    for i in range(70,131):
-        ox.append(i)
-        oy.append(130)
+    # for i in range(70,131):
+    #     ox.append(i)
+    #     oy.append(130)
 
-    for i in range(70,131):
-        ox.append(130)
-        oy.append(i)
+    # for i in range(70,131):
+    #     ox.append(130)
+    #     oy.append(i)
+
+    for i in range(len(mapInt)):
+        for j in range(len(mapInt[0])):
+            if mapInt[i][j] == 0:
+                ox.append(j)
+                oy.append(len(mapInt) - i - 1)
 
     markers_s = ["og","or","oy","ob"]
     markers_g = ["xg","xr","xy","xb"]
