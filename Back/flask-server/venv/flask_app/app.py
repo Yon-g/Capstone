@@ -24,7 +24,7 @@ cors = CORS(app, resources={r"/*/": {"origins": "*"}})
 Pos = [0.00] * (3 * NumOfChair) # {X, Y, Heading}
 Order = ["0"] # type, order_Msg
 isWorking = [False]
-SystemIsOn = False
+SystemIsOn = True
 
 # 0 : No Order Now
 # 1 : Yes order Now  
@@ -92,6 +92,10 @@ def websocket_communicate():
         if rawData[0] == "7" :
             isWorking[0] = True
 
+        # 0번 : 작업 실행 없음, 작업 요청 가능
+        # 1 ~ 4번 : 해당 작업 수행 중
+        # 5번 : 작업 시작 대기 중
+
         #작업시작, 종료에 따라 리액트에서 받는 Order가 달라지게 되는데
         #그때 어떻게 동작할지 결정 필요
         #제대로 되게 해야됨
@@ -154,9 +158,11 @@ def socket_Pos():
 
     return jsonify(status_pos)
 
+#여기서 아래 2번째 리턴을 주석 풀면 테스트 가능
 @app.route("/socket_order/",methods=['GET'])
 def socket_Order():
     global Order
+    # return jsonify({'order': '2'})
     return jsonify({'order':Order[0]})
 
 @app.route('/map-image/')
@@ -166,8 +172,8 @@ def serve_map_image():
 #MAIN
 if __name__ == '__main__':
     # thread = threading.Thread(target=serverClient_getImage)
-    thread = threading.Thread(target=websocket_communicate)
-    # thread = threading.Thread(target=changingGlobal)
+    # thread = threading.Thread(target=websocket_communicate)
+    thread = threading.Thread(target=changingGlobal)
     thread.start()
     if SystemIsOn :
         app.run('0.0.0.0',port=5000,debug=False)
