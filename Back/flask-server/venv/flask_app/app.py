@@ -16,22 +16,18 @@ Address = {'IP_webserver' : '192.168.0.130',
 NumOfChair = 4
 
 app = Flask(__name__)
-
 #CORS정책 비활성화
 cors = CORS(app, resources={r"/*/": {"origins": "*"}})
 
-
 Pos = [0.00] * (3 * NumOfChair) # {X, Y, Heading}
-Order = ["0"] # type, order_Msg
+Order = ["0"] 
+status = ["0"]
 isWorking = [False]
 SystemIsOn = True
 
-# 0 : No Order Now
-# 1 : Yes order Now  
-
 #ROS to Flask, 좌표값 수신 코드
 def websocket_communicate():
-    global Pos, Order, Address, NumOfChair, isWorking, SystemIsOn
+    global Pos, Order, Address, NumOfChair, isWorking, SystemIsOn, status
 
     client_sock=socket(AF_INET, SOCK_STREAM)
 
@@ -64,7 +60,7 @@ def websocket_communicate():
 
     #Image라이브러리 통해서 로컬 directory에 저장
     image = Image.open(io.BytesIO(image_data))
-    image.save('static/mapImage.png','png')
+    image.save('static/mapImg.png','png')
 
     client_sock.send('Map Image received'.encode('utf-8'))
     SystemIsOn = True
@@ -76,7 +72,6 @@ def websocket_communicate():
         msgFrmROS = str(msgFrmROS)
         print(msgFrmROS)
 
-        #작업 상태 + 좌표로 변경 필요함
         rawData = list(msgFrmROS[2:-1].split())
         for i in range(NumOfChair * 3):
             Pos[i] = rawData[i + 1]
@@ -87,23 +82,24 @@ def websocket_communicate():
         if rawData[0] == "8" :
             isWorking[0] = False
             Order[0] = "0"
+            status = "0"
 
         #작업시작시
         if rawData[0] == "7" :
             isWorking[0] = True
+            status = Order[0]
+        
+        #시스템 오류
+        if rawData[0] == "9" :
+            isWorking[0] = False
+            status = '9'
+            Order = '0'
 
         # 0번 : 작업 실행 없음, 작업 요청 가능
         # 1 ~ 4번 : 해당 작업 수행 중
         # 5번 : 작업 시작 대기 중
 
-        #작업시작, 종료에 따라 리액트에서 받는 Order가 달라지게 되는데
-        #그때 어떻게 동작할지 결정 필요
-        #제대로 되게 해야됨
-
-        if not isWorking[0] and Order[0] != "0" :
-            msg2ROS = str(Order[0])
-        
-        if Order[0] == "4" :
+        if status[0] == '5':
             msg2ROS = str(Order[0])
 
         #자체적으로 인터벌 유지
@@ -133,17 +129,17 @@ def handle_click_coordinates():
 
     print("Coordinates received:", user_order)
     print(isWorking[0], user_order)
-    #현재 작업 상태가 공백이 아니거나, 유저 명령이 작업 멈춰! 가 아니라면
-    if isWorking[0] and user_order != '4':
-        #명령하달 실패 메시지 반환
-        return jsonify({"status": "fail", "message": "Your previous order is not finished yet"})
+    #작업 중 종료요청 or 미작업 중 1~3 요청
+    if (not isWorking[0] and user_order != 4) or (isWorking[0] and user_order == '4'):
+        #작업 메시지 확인 시
+        Order[0] = user_order
+        status[0] = '5'
+        print("*" * 100)
+        print(Order[0])
+        print("*" * 100)
+        return jsonify({"status": "success", "message": "Coordinates received"}), 200
     
-    #작업 메시지 확인 시
-    Order[0] = user_order
-    print("*" * 100)
-    print(Order[0])
-    print("*" * 100)
-    return jsonify({"status": "success", "message": "Coordinates received"}), 200
+    return jsonify({"status": "fail", "message": "Your previous order is not finished yet"})
 
 #전역변수를 사용해 실시간 웹소켓 통신으로 전달받은 좌표값을 json데이터로 반환
 @app.route("/socket_Pos/",methods=['GET'])
@@ -161,13 +157,13 @@ def socket_Pos():
 #여기서 아래 2번째 리턴을 주석 풀면 테스트 가능
 @app.route("/socket_order/",methods=['GET'])
 def socket_Order():
-    global Order
+    global status
     # return jsonify({'order': '2'})
-    return jsonify({'order':Order[0]})
+    return jsonify({'order':status[0]})
 
 @app.route('/map-image/')
 def serve_map_image():
-    return send_from_directory('static', 'mapImage.png')
+    return send_from_directory('static', 'map.png')
 
 #MAIN
 if __name__ == '__main__':
