@@ -21,27 +21,27 @@ export default function LayoutComponet() {
         const response = await fetch("http://localhost:5000/socket_order");
         const data = await response.json();
         setOrder(data.order);
-        console.log(data.order);
-
-        if (data.order == 1 || data.order == 2 || data.order == 3 || data.order == 4) {
-          // 서버로부터 0이 아닌 값을 받았고, 아직 타이머가 설정되지 않았다면 타이머 시작
-          // 서버로부터 문자열도 받고 있어서 일단 1,2,3,4로 코딩함
-          if (!errorTimeoutId.current) {
-            errorTimeoutId.current = setTimeout(() => {
-              alert("의자가 이동 중에 오류가 발생하였습니다."); //alert가 아닌 새로운 모달창(?)을 만들어야 좋을 듯(일단 틀은 만들었으니 그건 나중에하자)
-              setIsError(true); 
-              isErrorRef.current = true; 
-            }, 3000); // 3초 후에 오류 메시지를 표시(이건 테스트용으로 3초로 했기 때문에 나중에 몇분으로 할 지 수정하자)
-          }
-        } else {
-          // 서버로부터 0을 받았을 때, 타이머가 있다면 취소하고 상태를 초기화
-          if (errorTimeoutId.current) {
-            clearTimeout(errorTimeoutId.current);
-            errorTimeoutId.current = null;
-            setIsError(false); 
-            isErrorRef.current = false; 
-          }
-        }
+        console.log("서버에서 받는 데이터:", data.order);
+        // 여긴 백엔드에서 처리한다고함 -> 승헌
+        // if (data.order == 1 || data.order == 2 || data.order == 3 || data.order == 4) {
+        //   // 서버로부터 0이 아닌 값을 받았고, 아직 타이머가 설정되지 않았다면 타이머 시작
+        //   // 서버로부터 문자열도 받고 있어서 일단 1,2,3,4로 코딩함
+        //   if (!errorTimeoutId.current) {
+        //     errorTimeoutId.current = setTimeout(() => {
+        //       alert("의자가 이동 중에 오류가 발생하였습니다."); //alert가 아닌 새로운 모달창(?)을 만들어야 좋을 듯(일단 틀은 만들었으니 그건 나중에하자)
+        //       setIsError(true);
+        //       isErrorRef.current = true;
+        //     }, 3000); // 3초 후에 오류 메시지를 표시(이건 테스트용으로 3초로 했기 때문에 나중에 몇분으로 할 지 수정하자)
+        //   }
+        // } else {
+        // 서버로부터 0을 받았을 때, 타이머가 있다면 취소하고 상태를 초기화
+        //   if (errorTimeoutId.current) {
+        //     clearTimeout(errorTimeoutId.current);
+        //     errorTimeoutId.current = null;
+        //     setIsError(false);
+        //     isErrorRef.current = false;
+        //   }
+        // }
       } catch (error) {
         console.error("TurtleBot order fetching error: ", error);
       }
