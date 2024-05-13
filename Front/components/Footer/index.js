@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { StyledFooter, StyledMoveButton, StyledStopButton, StyledModal, StyledPreset, StyledPresetHead, StyledApplyButton } from "./styles";
+import { StyledFooter, StyledMoveButton, StyledStopButton, StyledModal, StyledPreset, StyledPresetHead, StyledApplyButton, StyledPreview, StyledPreviewIcon } from "./styles";
 import IconButton from "../IconButtonComponent";
 import PresetModal from "../Modal";
 import { MessageOutlined, ShopOutlined, SettingOutlined } from "@ant-design/icons";
@@ -20,6 +20,8 @@ export default function FooterComponents({ order }) {
 
   const closeModal = () => {
     setOpen(false);
+    setSelectedPreset(null);
+    console.log(selectedPreset);
   };
 
   const startPreset = async () => {
@@ -84,9 +86,10 @@ export default function FooterComponents({ order }) {
             <StyledPreset
               key={presetId}
               onClick={() => selectPreset(presetId)}
-              style={{ backgroundColor: selectedPreset === presetId ? '#d0d0d0' : 'transparent' }} // 조건부 스타일 적용
+              style={{ backgroundColor: selectedPreset === presetId ? '#a9a9a9' : 'transparent' }} // 조건부 스타일 적용
             >
-              {presetId}. 정리{presetId}
+              <p style={{ margin: '0px', marginLeft: '53px' }}>{presetId}. 정리{presetId}</p>
+              {selectedPreset === presetId ? <StyledPreview type="primary" shape="circle" icon={<StyledPreviewIcon />} onClick={(e) => { e.stopPropagation(); closeModal(); }} /> : null}
             </StyledPreset>
           ))}
         </StyledModal> : null
@@ -109,6 +112,7 @@ export default function FooterComponents({ order }) {
         )}
         <IconButton icon={<SettingOutlined />}></IconButton>
         <IconButton icon={<ShopOutlined />}></IconButton>
+        {/* <StyledPreview type="primary" shape="circle" icon={<StyledPreviewIcon />} /> */}
       </StyledFooter>
       {/* <PresetModal open={open} setOpen={setOpen}></PresetModal> */}
     </>
