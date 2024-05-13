@@ -165,6 +165,12 @@ def socket_Order():
 def serve_map_image():
     return send_from_directory('static', 'map.png')
 
+@app.route('/route-data/')
+def serve_map_image():
+    routesForEach = []
+    routesForEach.append({'id': 1,'x': 1,'y':1})
+    return jsonify(routesForEach)
+
 #MAIN
 if __name__ == '__main__':
     # thread = threading.Thread(target=serverClient_getImage)

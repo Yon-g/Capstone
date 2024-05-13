@@ -276,6 +276,13 @@ def run():
 # def run(STARTS:list,GOALS:list)->list:
     print(__file__ + " start!!")
     mapInt = SLAM_TO_Array("static/1.pgm")
+
+    #책상그리기?
+    # mx,my = len(mapInt[0])//2,len(mapInt)//2
+    # for i in range(mx-5,mx+6):
+    #     for j in range(my-5,my+6):
+    #         mapInt[j][i] = 0
+ 
     # start and goal position
     # sx = 30.0  # [m]
     # sy = 30.0  # [m]
