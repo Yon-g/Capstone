@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
 import { Layout, Button } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
 
 export const StyledFooter = styled(Layout.Footer)`
   height: 10vh;
@@ -70,14 +71,19 @@ export const StyledModal = styled.div`
   border-radius: 4px;
 `;
 
+
 export const StyledPreset = styled.div`
-  text-align: center;
+  display: flex; /* Flexbox 사용 */
+  justify-content: space-between; /* 양 끝에 요소를 배치 */
+  align-items: center; /* 세로 중앙 정렬 */
   padding: 6px;
   font-weight: 500;
+
   &:hover {
-    background-color: #d0d0d0; // 마우스를 올렸을 때의 배경색
+    background-color: #d0d0d0; /* 마우스를 올렸을 때의 배경색 */
   }
 `;
+
 
 export const StyledPresetHead = styled.div`
   text-align: center;
@@ -87,3 +93,25 @@ export const StyledPresetHead = styled.div`
   justify-content: space-between; /* 모든 자식 요소를 양쪽 끝으로 정렬 */
   width: 100%; /* 전체 너비 사용 */
 `;
+
+export const StyledPreview = styled(Button)`
+  min-width: 10px;
+  width: 20px;
+  min-height: 10px;
+  height: 20px;
+  display: flex; /* Flex 컨테이너 설정 */
+  justify-content: center; /* 가로축에서 중앙 정렬 */
+  align-items: center; /* 세로축에서 중앙 정렬 */
+  background-color: green;
+    border-color: green;
+`;
+
+export const StyledPreviewIcon = styled(SearchOutlined)`
+  min-width: 10px;
+  width: 15px;
+  min-height: 10px;
+  height: 15px;
+  background-color: green;
+    border-color: green;
+`;
+

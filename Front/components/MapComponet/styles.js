@@ -8,6 +8,6 @@ export const StyledMapContainer = styled.div`
   img {
     width: 100%;
     height: 100%;
-    object-fit: container;
+    object-fit: contain;
   }
 `;
