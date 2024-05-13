@@ -1,5 +1,5 @@
 from flask import Flask, render_template, jsonify, request, Response
-from flask import send_from_directory
+from flask import send_from_directory, send_file
 
 from flask_cors import CORS
 from socket import *
@@ -22,10 +22,40 @@ cors = CORS(app, resources={r"/*/": {"origins": "*"}})
 Pos = [0.00] * (3 * NumOfChair) # {X, Y, Heading}
 Order = ["0"] 
 status = ["0"]
+preview = ["0"]
+path = ["0"]
 isWorking = [False]
 SystemIsOn = True
 
 #ROS to Flask, 좌표값 수신 코드
+def websocket_preview():
+    global preview, path
+    client_sock=socket(AF_INET, SOCK_STREAM)
+
+    try:
+        client_sock.connect((Address['IP_ROS'], 8000)) #용원 ROS돌리는 IP, Port
+
+    except ConnectionRefusedError:
+        print('좌표 전송 서버에 연결할 수 없습니다.')
+        print('1. 서버의 ip주소와 포트번호가 올바른지 확인하십시오.')
+        print('2. 서버 실행 여부를 확인하십시오.')
+        os._exit(1)
+    
+    initial_msg = str(preview[0])
+
+    msg = client_sock.recv(128)
+    client_sock.send('Connection Success'.encode('utf-8'))
+
+    client_sock.send('Map Image received'.encode('utf-8'))
+    SystemIsOn = True
+
+    msgFrmROS = client_sock.recv(128)
+    msgFrmROS.decode('utf-8')
+    msgFrmROS = str(msgFrmROS)
+    path[0] = msgFrmROS
+
+    return
+
 def websocket_communicate():
     global Pos, Order, Address, NumOfChair, isWorking, SystemIsOn, status
 
@@ -82,22 +112,23 @@ def websocket_communicate():
         if rawData[0] == "8" :
             isWorking[0] = False
             Order[0] = "0"
-            status = "0"
+            status[0] = "0"
 
         #작업시작시
         if rawData[0] == "7" :
             isWorking[0] = True
-            status = Order[0]
+            status[0] = Order[0]
         
         #시스템 오류
         if rawData[0] == "9" :
             isWorking[0] = False
-            status = '9'
-            Order = '0'
+            status[0] = '9'
+            Order[0] = '0'
 
         # 0번 : 작업 실행 없음, 작업 요청 가능
         # 1 ~ 4번 : 해당 작업 수행 중
         # 5번 : 작업 시작 대기 중
+        # 6번 : 미리보기
 
         if status[0] == '5':
             msg2ROS = str(Order[0])
@@ -141,6 +172,20 @@ def handle_click_coordinates():
     
     return jsonify({"status": "fail", "message": "Your previous order is not finished yet"})
 
+#미리보기 post
+@app.route('/preview_post', methods=['POST'])
+def preview_click_coordinates():
+    global preview
+    preview_req = request.json['preview']
+    preview[0] = preview_req
+    Order[0] = '6'
+    status[0] = '5'
+
+    print("*" * 100)
+    print("preview received:", preview_req)
+    print("*" * 100)
+    return jsonify({"status": "success", "message": "preview option received"})
+
 #전역변수를 사용해 실시간 웹소켓 통신으로 전달받은 좌표값을 json데이터로 반환
 @app.route("/socket_Pos/",methods=['GET'])
 def socket_Pos():
@@ -163,13 +208,21 @@ def socket_Order():
 
 @app.route('/map-image/')
 def serve_map_image():
-    return send_from_directory('static', 'map.png')
+    return send_from_directory('static','map.jpg')
 
-@app.route('/route-data/')
+@app.route('/map-image2/', methods=['GET'])
+def get_image():
+    image_path = 'static/map.png'
+    return send_file(image_path, mimetype='image/png')
+
+@app.route('/route-data/',methods=['GET'])
 def serve_route_data():
-    routesForEach = []
-    routesForEach.append({'id': 1,'x': 1,'y':1})
-    return jsonify(routesForEach)
+    global path
+    if path[0] == "0" : 
+        return jsonify({'path' : '-1'})
+    else : 
+        #좌표배열로 변환해서 어쩌고 저쩌고
+        return jsonify()
 
 #MAIN
 if __name__ == '__main__':
