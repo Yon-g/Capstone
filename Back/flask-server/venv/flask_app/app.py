@@ -166,7 +166,7 @@ def serve_map_image():
     return send_from_directory('static', 'map.png')
 
 @app.route('/route-data/')
-def serve_map_image():
+def serve_route_data():
     routesForEach = []
     routesForEach.append({'id': 1,'x': 1,'y':1})
     return jsonify(routesForEach)
