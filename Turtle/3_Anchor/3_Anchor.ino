@@ -27,8 +27,10 @@ const uint8_t PIN_IRQ = 17;
 
 // Extended Unique Identifier register. 64-bit device identifier. Register file: 0x01
 const char EUI[] = "AA:BB:CC:DD:EE:FF:00:03"; 
-
-byte main_anchor_address[] = {0x01, 0x00};
+byte anchorA[] = {0x04, 0x00};
+byte anchorB[] = {0x05, 0x00};
+byte anchorC[] = {0x06, 0x00};
+byte anchorD[] = {0x07, 0x00};
 
 uint16_t blink_rate = 200;
 
@@ -100,26 +102,84 @@ void setup() {
     Serial.print("Device mode: "); Serial.println(msg);
 }
 
-void transmitRangeReport() {
+
+
+void transmitRangeReport(byte tag_short_address[], double range) {
     byte rangingReport[] = {DATA, SHORT_SRC_AND_DEST, DW1000NgRTLS::increaseSequenceNumber(), 0,0, 0,0, 0,0, 0x60, 0,0 };
     DW1000Ng::getNetworkId(&rangingReport[3]);
-    memcpy(&rangingReport[5], main_anchor_address, 2);
+    memcpy(&rangingReport[5], tag_short_address, 2);
     DW1000Ng::getDeviceAddress(&rangingReport[7]);
-    DW1000NgUtils::writeValueToBytes(&rangingReport[10], static_cast<uint16_t>((range_self*1000)), 2);
+    DW1000NgUtils::writeValueToBytes(&rangingReport[10], static_cast<uint16_t>((range)), 2);
     DW1000Ng::setTransmitData(rangingReport, sizeof(rangingReport));
     DW1000Ng::startTransmit();
 }
- 
+
+RangeAcceptResult anchorRangeAccept_TagA(NextActivity next, uint16_t value) {
+    RangeAcceptResult returnValue;
+
+    double range;
+    if(!DW1000NgRTLS::receiveFrame()) {
+        returnValue = {false, 0};
+    } else {
+
+        size_t poll_len = DW1000Ng::getReceivedDataLength();
+        byte poll_data[poll_len];
+        DW1000Ng::getReceivedData(poll_data, poll_len);
+
+        if(poll_len > 9 && poll_data[9] == RANGING_TAG_POLL) {
+            uint64_t timePollReceived = DW1000Ng::getReceiveTimestamp();
+            DW1000NgRTLS::transmitResponseToPoll(&poll_data[7]);
+            DW1000NgRTLS::waitForTransmission();
+            uint64_t timeResponseToPoll = DW1000Ng::getTransmitTimestamp();
+            delayMicroseconds(1500);
+
+            if(!DW1000NgRTLS::receiveFrame()) {
+                returnValue = {false, 0};
+            } else {
+
+                size_t rfinal_len = DW1000Ng::getReceivedDataLength();
+                byte rfinal_data[rfinal_len];
+                DW1000Ng::getReceivedData(rfinal_data, rfinal_len);
+                if(rfinal_len > 18 && rfinal_data[9] == RANGING_TAG_FINAL_RESPONSE_EMBEDDED && poll_data[7] == rfinal_data[7]) {
+                    Serial.print(poll_data[7]);
+                    uint64_t timeFinalMessageReceive = DW1000Ng::getReceiveTimestamp();
+
+                    range = DW1000NgRanging::computeRangeAsymmetric(
+                        DW1000NgUtils::bytesAsValue(rfinal_data + 10, LENGTH_TIMESTAMP), // Poll send time
+                        timePollReceived, 
+                        timeResponseToPoll, // Response to poll sent time
+                        DW1000NgUtils::bytesAsValue(rfinal_data + 14, LENGTH_TIMESTAMP), // Response to Poll Received
+                        DW1000NgUtils::bytesAsValue(rfinal_data + 18, LENGTH_TIMESTAMP), // Final Message send time
+                        timeFinalMessageReceive // Final message receive time
+                    );
+
+                    range = DW1000NgRanging::correctRange(range);
+
+                    /* In case of wrong read due to bad device calibration */
+                    if(range <= 0) 
+                        range = 0.000001;
+
+                    returnValue = {true, range};
+                    // transmitRangeReport(&poll_data[7],range);
+                }
+            }
+        }
+    }
+
+    return returnValue;
+}
+
 void loop() {
-     RangeAcceptResult result = DW1000NgRTLS::anchorRangeAccept(NextActivity::ACTIVITY_FINISHED, blink_rate);
+     RangeAcceptResult result = anchorRangeAccept_TagA(NextActivity::ACTIVITY_FINISHED, blink_rate);
      if(result.success) {
         delay(4); // Tweak based on your hardware
         range_self = result.range;
-        transmitRangeReport();
+        
 
         String rangeString = "Range: "; rangeString += range_self; rangeString += " m";
         rangeString += "\t RX power: "; rangeString += DW1000Ng::getReceivePower(); rangeString += " dBm";
         Serial.println(rangeString);
      }
 }
+
 
