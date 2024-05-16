@@ -23,7 +23,7 @@ Pos = [0.00] * (3 * NumOfChair) # {X, Y, Heading}
 Order = ["0"] 
 status = ["0"]
 preview = ["0"]
-path = ["0"]
+path = ["1","0","0","5","5","3","7","5","10","10","10"]
 isWorking = [False]
 SystemIsOn = True
 
@@ -221,8 +221,17 @@ def serve_route_data():
     if path[0] == "0" : 
         return jsonify({'path' : '-1'})
     else : 
-        #좌표배열로 변환해서 어쩌고 저쩌고
-        return jsonify()
+        route_arr = {}
+        route_arr['id'] = 1
+        for i in range(1,len(path)):
+            tmp = ""
+            if i % 2 != 0:
+                tmp += 'x'
+            else :
+                tmp += 'y'
+            tmp += str((i-1) // 2)
+            route_arr[tmp] = path[i]
+        return jsonify(route_arr)
 
 #MAIN
 if __name__ == '__main__':
@@ -231,4 +240,4 @@ if __name__ == '__main__':
     thread = threading.Thread(target=changingGlobal)
     thread.start()
     if SystemIsOn :
-        app.run('0.0.0.0',port=5000,debug=False)
+        app.run('0.0.0.0',port=5001,debug=False)
