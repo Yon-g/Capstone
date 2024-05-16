@@ -240,4 +240,4 @@ if __name__ == '__main__':
     thread = threading.Thread(target=changingGlobal)
     thread.start()
     if SystemIsOn :
-        app.run('0.0.0.0',port=5001,debug=False)
+        app.run('0.0.0.0',port=5000,debug=False)
