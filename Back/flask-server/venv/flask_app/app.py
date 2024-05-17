@@ -140,8 +140,8 @@ def websocket_communicate():
 def changingGlobal():
     global Pos, NumOfChair
     while(True):
-        for i in range(NumOfChair * 3):
-            Pos[i] = random.randint(100)
+        for i in range(len(Pos)):
+            Pos[i] = random.randint(10)
         time.sleep(0.1)
 
 @app.route("/")
@@ -210,6 +210,10 @@ def socket_Order():
 def serve_map_image():
     return send_from_directory('static','map.png')
 
+@app.route('/unnamed')
+def unnamed_serve_api():
+    randOpt = 0.0
+    return jsonify(randOpt)
 @app.route('/map-image2/', methods=['GET'])
 def get_image():
     image_path = 'static/map.png'
