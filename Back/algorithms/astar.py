@@ -12,8 +12,8 @@ import random
 import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
-import os
-import csv
+import os, csv
+from bitmap2img import load_GetOxOy, loadAsIntArr
 
 from itertools import permutations
 
@@ -275,7 +275,7 @@ def SLAM_TO_Array(source = "relative path of map image file"):
 def run():
 # def run(STARTS:list,GOALS:list)->list:
     print(__file__ + " start!!")
-    mapInt = SLAM_TO_Array("static/1.pgm")
+    # mapInt = SLAM_TO_Array("static/1.pgm")
 
     #책상그리기?
     # mx,my = len(mapInt[0])//2,len(mapInt)//2
@@ -296,34 +296,11 @@ def run():
     # gx = [100.0, 100.0, 50.0, 150.0]
     # gy = [50.0, 150.0, 100.0, 100.0]
 
-    start = []
-    while len(start) < 4:
-        ty,tx = random.randint(0,len(mapInt[0])-1), random.randint(0,len(mapInt)-1)
-        if mapInt[tx][ty] == 0 : continue
-        if (tx,ty) in start : continue
-        start.append((tx,ty))
-
-    for x,y in start :
-        sx.append(x)
-        sy.append(y)
-
-    goal = []
-    while len(goal) < 4:
-        ty,tx = random.randint(0,len(mapInt[0])-1), random.randint(0,len(mapInt)-1)
-        if mapInt[tx][ty] == 0 : continue
-        if (tx,ty) in start or (tx,ty) in goal : continue
-        goal.append((tx,ty))
-    
-    for x,y in goal :
-        gx.append(x)
-        gy.append(y)
-
-
     grid_size = 3.0  # [m]
-    robot_radius = 1.0  # [m]
+    robot_radius = 5.0  # [m]
 
     CrashWeight = 5.0
-
+    
     num_robot = 4
 
     # set obstacle positions
@@ -360,11 +337,34 @@ def run():
     #     ox.append(130)
     #     oy.append(i)
 
-    for i in range(len(mapInt)):
-        for j in range(len(mapInt[0])):
-            if mapInt[i][j] == 0:
-                ox.append(j)
-                oy.append(len(mapInt) - i - 1)
+    #NEW WAY TO LOAD MAP FILE
+    obstacle = load_GetOxOy("map2.txt")
+    ox = obstacle['x']
+    oy = obstacle['y']
+
+    mapArr = loadAsIntArr('map2.txt')
+    start = []
+
+    while len(start) < 4:
+        ty,tx = random.randint(0,len(mapArr[0])-1), random.randint(0,len(mapArr)-1)
+        if mapArr[tx][ty] == 1 : continue
+        if (tx,ty) in start : continue
+        start.append((tx,ty))
+
+    for x,y in start :
+        sx.append(x)
+        sy.append(y)
+
+    goal = []
+    while len(goal) < 4:
+        ty,tx = random.randint(0,len(mapArr[0])-1), random.randint(0,len(mapArr)-1)
+        if mapArr[tx][ty] == 1 : continue
+        if (tx,ty) in start or (tx,ty) in goal : continue
+        goal.append((tx,ty))
+    
+    for x,y in goal :
+        gx.append(x)
+        gy.append(y)
 
     markers_s = ["og","or","oy","ob"]
     markers_g = ["xg","xr","xy","xb"]
