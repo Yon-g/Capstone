@@ -2,6 +2,7 @@ from flask import Flask, render_template, jsonify, request, Response
 from flask import send_from_directory, send_file
 
 from flask_cors import CORS
+from mapProcess import smooth_walls, save_img, chgDTypeInt
 from socket import *
 from collections import deque
 import threading, io
@@ -73,7 +74,7 @@ def websocket_communicate():
     msg = client_sock.recv(128)
     client_sock.send('Connection Success'.encode('utf-8'))
 
-    #맵 파일 수신
+    #맵 파일 수신 ==>>> 수정필요 / 100x100 배열로 수정
     imgSize = client_sock.recv(1024)
     Size = int(imgSize.decode('utf-8'))
     print(Size)
