@@ -28,6 +28,11 @@ def save_img(arr,imgname="map_image.png"):
     skyB_wht = plt.cm.colors.ListedColormap(['skyblue', 'white'])
     plt.imsave(imgname,arr, cmap=skyB_wht)
 
+def totalProcess(arr,fileName):
+    intArr = chgDTypeInt(arr)
+    smoothed = smooth_walls(intArr)
+    save_img(smoothed,fileName)
+
 if __name__ == '__main__':
     # 예시 벽 배열 (0은 빈 공간, 1은 벽)
     # # 예시 벽 배열 (0은 빈 공간, 1은 벽)

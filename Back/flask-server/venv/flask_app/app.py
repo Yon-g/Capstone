@@ -2,7 +2,7 @@ from flask import Flask, render_template, jsonify, request, Response
 from flask import send_from_directory, send_file
 
 from flask_cors import CORS
-from mapProcess import smooth_walls, save_img, chgDTypeInt
+from mapProcess import totalProcess
 from socket import *
 from collections import deque
 import threading, io
@@ -81,18 +81,12 @@ def websocket_communicate():
     client_sock.send('Img Size recieved'.encode('utf-8'))
 
     # #사전에 전달받은 이미지 파일 크기만큼의 메시지(바이트) 수신
-    image_data = b''
-    while True:
-        seperate = client_sock.recv(1024)
-        image_data += seperate
-        if len(image_data) == Size : break
-
-    print('*'*100)
-
-    #Image라이브러리 통해서 로컬 directory에 저장
-    image = Image.open(io.BytesIO(image_data))
-    image.save('static/mapImg.png','png')
-
+    Map_arr = []
+    for _ in range(Size):
+        row = client_sock.recv(1024)
+        Map_arr.append(list(row.decode('utf-8')))
+    totalProcess(Map_arr,'static/map.png')
+    
     client_sock.send('Map Image received'.encode('utf-8'))
     SystemIsOn = True
 
@@ -215,12 +209,9 @@ def serve_map_image():
 def unnamed_serve_api():
     randOpt = 0.0
     return jsonify(randOpt)
-@app.route('/map-image2/', methods=['GET'])
-def get_image():
-    image_path = 'static/map.png'
-    return send_file(image_path, mimetype='image/png')
 
 @app.route('/route-data/',methods=['GET'])
+# id, x1, y1, x2, y2, x3, y3
 def serve_route_data():
     global path
     if path[0] == "0" : 
