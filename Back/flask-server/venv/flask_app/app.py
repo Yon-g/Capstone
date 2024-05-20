@@ -81,9 +81,13 @@ def websocket_communicate():
 
     # #사전에 전달받은 이미지 파일 크기만큼의 메시지(바이트) 수신
     # Map_arr = []
-    # for _ in range(Size):
-    #     row = client_sock.recv(1024)
-    #     Map_arr.append(list(row.decode('utf-8')))
+    # map_msg = client_sock.recv(R * C + 2)
+    map_msg = map_msg.decode('utf-8')
+    t_pos = 0
+    Map_arr = []
+    for _ in range(R):
+        Map_arr.append()
+    # Map_arr.append(list(row.decode('utf-8')))
     # totalProcess(Map_arr,'static/map.png')
     
     # client_sock.send('Map Image received'.encode('utf-8'))

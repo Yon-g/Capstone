@@ -50,7 +50,7 @@ if __name__ == '__main__':
             arr.append(list(map(int,line.strip())))
     # print(arr)``
     smoothed_wall = smooth_walls(arr)
-    cmap1 = plt.cm.colors.ListedColormap(['skyblue', 'white'])
+    cmap1 = plt.cm.colors.ListedColormap(['gray', 'white'])
     plt.imsave('map_image.png',smoothed_wall, cmap=cmap1)
 
     # 결과 출력
