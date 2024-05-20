@@ -207,7 +207,7 @@ def socket_Order():
 
 @app.route('/map-image/')
 def serve_map_image():
-    return send_from_directory('static','map.png')
+    return send_from_directory('static','map_image.png')
 
 @app.route('/unnamed')
 def unnamed_serve_api():
