@@ -70,7 +70,7 @@ export default function LayoutComponet() {
     const positionIntervalId = setInterval(fetchTurtlebotPositions, 100);
 
     return () => {
-      clearInterval(orderIntervalId);
+      // clearInterval(orderIntervalId);
       clearInterval(positionIntervalId);
       if (errorTimeoutId.current) {
         clearTimeout(errorTimeoutId.current);
