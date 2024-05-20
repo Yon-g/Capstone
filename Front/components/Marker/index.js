@@ -9,34 +9,40 @@ const Marker = ({ key, lat, lng }) => {
     y: Math.min(Math.max(longitude, 0), 100),
   });
 
+  // key 값에 따른 배경색을 결정하는 함수
+  const getBackgroundColor = (key) => {
+    switch (key) {
+      case 1:
+        setMarkerColor("red");
+        break;
+      case 2:
+        setMarkerColor("blue");
+        break;
+      case 3:
+        setMarkerColor("green");
+        break;
+      case 4:
+        setMarkerColor("yellow");
+        break;
+      default:
+        setMarkerColor("transparent"); // 기본값
+    }
+  };
+
   const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [markerColor, setMarkerColor] = useState(null);
+  const [markerColor, setMarkerColor] = useState("");
 
   useEffect(() => {
     const { x, y } = convertLatLonToScreenCoords(lat, lng);
     setPosition({ x, y });
   }, [lat, lng]); //lat 또는 lng가 변경될 때마다 실행
 
-  // key 값에 따른 배경색을 결정하는 함수
-  const getBackgroundColor = (key) => {
-    switch (key) {
-      case 1:
-        setMarkerColor(red);
-      case 2:
-        setMarkerColor(blue);
-      case 3:
-        setMarkerColor(green);
-      case 4:
-        setMarkerColor(yellow);
-      default:
-        return "transparent"; // 기본값
-    }
-  };
+  useEffect(() => {
+    getBackgroundColor(key)
+  }, [key]); //lat 또는 lng가 변경될 때마다 실행
 
   return (
-    <StyledMarker style={{
-      left: `${lat}px`, top: `${lng}px`, color: `${markerColor}`
-    }} />
+    <StyledMarker style={{ left: `${lat}px`, top: `${lng}px` }} />
     // <StyledMarker style={{ left: `${position.x}px`, top: `${position.y}px`, color: getBackgroundColor(key) }} />
 
   );
