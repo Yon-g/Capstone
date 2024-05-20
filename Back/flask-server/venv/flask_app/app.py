@@ -198,7 +198,7 @@ def socket_Pos():
     #react에서 직전에 보낸 명령을 기억해뒀다가
     #여기서 보내는 status랑 비교해서 상태가 달라진 걸 확인할 수 있어야 함
     for i in range(NumOfChair):
-        status_pos.append({'id': i+1,'x':Pos[3*i],'y':Pos[3*i + 1],'heading':Pos[3*i + 2]})
+        status_pos.append({'id': i+1,'x':Pos[3*i+1],'y':Pos[3*i],'heading':Pos[3*i + 2]})
 
     return jsonify(status_pos)
 
@@ -228,9 +228,9 @@ def serve_route_data():
         for j in range(2*L):
             t_s = ""
             if j % 2 == 0:
-                t_s += "x"
-            else :
                 t_s += "y"
+            else :
+                t_s += "x"
             t_dic[t_s + str(int(j//2 + 1))] = tmp_arr[j]
         route_arr.append(t_dic)
     return jsonify(route_arr)
@@ -238,8 +238,8 @@ def serve_route_data():
 #MAIN
 if __name__ == '__main__':
     # thread = threading.Thread(target=serverClient_getImage)
-    # thread = threading.Thread(target=websocket_communicate)
-    thread = threading.Thread(target=changingGlobal)
+    thread = threading.Thread(target=websocket_communicate)
+    # thread = threading.Thread(target=changingGlobal)
     thread.start()
     if SystemIsOn :
         app.run('0.0.0.0',port=5000,debug=False)
