@@ -7,16 +7,16 @@ import { UpCircleOutlined } from "@ant-design/icons";
 //   fontsize: 100px;
 //   transition: left 0.5s linear, top 0.5s linear;
 //   background-color: red;
-//   width:50px;
-//   height:50px;
+//   width:3px;
+//   height:3px;
 //   border-radius:5px
 // `;
 
 export const StyledMarker = styled(UpCircleOutlined)`
   position: absolute;
   // transform: translate(0%, 0%);
-  font-size: 150%;
-  color: red;
+  font-size: 50px;
+  // color: blue;
   transition: left 0.5s linear, top 0.5s linear;
   width:50px;
   height:50px;

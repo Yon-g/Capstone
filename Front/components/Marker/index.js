@@ -4,6 +4,9 @@ import { MessageOutlined, ShopOutlined, SettingOutlined, QuestionCircleOutlined 
 
 /* Marker 스타일링 */
 const Marker = ({ key, lat, lng }) => {
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [markerColor, setMarkerColor] = useState("");
+
   const convertLatLonToScreenCoords = (latitude, longitude) => ({
     x: Math.min(Math.max(latitude, 0), 100),
     y: Math.min(Math.max(longitude, 0), 100),
@@ -29,9 +32,6 @@ const Marker = ({ key, lat, lng }) => {
     }
   };
 
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [markerColor, setMarkerColor] = useState("");
-
   useEffect(() => {
     const { x, y } = convertLatLonToScreenCoords(lat, lng);
     setPosition({ x, y });
@@ -39,6 +39,7 @@ const Marker = ({ key, lat, lng }) => {
 
   useEffect(() => {
     getBackgroundColor(key)
+    console.log(markerColor)
   }, [key]); //lat 또는 lng가 변경될 때마다 실행
 
   return (

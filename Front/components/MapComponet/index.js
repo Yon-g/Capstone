@@ -5,7 +5,7 @@ import { MessageOutlined, ShopOutlined, SettingOutlined, QuestionCircleOutlined 
 
 const MapComponet = ({ turtlebots }) => {
   const imageUrl = "http://192.168.0.158:5000/map-image/";
-  // const [testturtlebot, setTestturtlebot] = useState([{ id: 1, lat: 50, lng: 50, heading: 0 }]);
+  const [testturtlebot, setTestturtlebot] = useState([{ id: 1, lat: 50, lng: 50, heading: 0 }]);
   console.log(turtlebots);
   return (
     <StyledMapContainer>
@@ -16,11 +16,11 @@ const MapComponet = ({ turtlebots }) => {
         style={{ position: "relative", width: "100%", height: "100%" }}
       ></img>
       {/* turtlebots 배열을 순회하며 Marker 컴포넌트를 렌더링 */}
-      {turtlebots.map((turtlebot) => (
+      {testturtlebot.map((turtlebot) => (
         <Marker
           key={turtlebot.id}
-          lat={turtlebot.lat * 8.2}
-          lng={turtlebot.lng * 8.2}
+          lat={turtlebot.lat * 8.2 - 25}
+          lng={turtlebot.lng * 8.2 - 25}
           heading={turtlebot.heading}
         ></Marker>
       ))}
