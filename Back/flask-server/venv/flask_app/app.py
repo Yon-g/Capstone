@@ -144,7 +144,7 @@ def changingGlobal():
     global Pos, NumOfChair
     while(True):
         for i in range(len(Pos)):
-            Pos[i] = random.randint(1,99)
+            Pos[i] = random.randint(51,51)
         time.sleep(0.1)
 
 @app.route("/")
