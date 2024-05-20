@@ -4,8 +4,8 @@ import Marker from "../Marker";
 
 const MapComponet = ({ turtlebots }) => {
   const imageUrl = "http://192.168.0.158:5000/map-image/";
-  const [testturtlebot, setTestturtlebot] = useState([{ id: 1, lat: 187.5, lng: 313.5, heading: 0 }, { id: 2, lat: 60, lng: 60, heading: 0 }, { id: 3, lat: 70, lng: 70, heading: 0 }, { id: 4, lat: 80, lng: 80, heading: 0 }]);
-  console.log(testturtlebot);
+  const [testturtlebot, setTestturtlebot] = useState([{ id: 1, lat: 98, lng: 50, heading: 0 }]);
+  console.log(turtlebots);
   return (
     <StyledMapContainer>
       <img
@@ -18,8 +18,8 @@ const MapComponet = ({ turtlebots }) => {
       {testturtlebot.map((turtlebot) => (
         <Marker
           key={turtlebot.id}
-          lat={turtlebot.lat}
-          lng={turtlebot.lng}
+          lat={turtlebot.lat * 8.2}
+          lng={turtlebot.lng * 9.98}
           heading={turtlebot.heading}
         ></Marker>
       ))}

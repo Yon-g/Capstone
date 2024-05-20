@@ -11,7 +11,9 @@ export default function FooterComponents({ order }) {
   const [loading, setLoading] = useState(false); // 로딩 상태 관리
 
   const showModal = () => {
-    setOpen(true);
+    if (open == false)
+      setOpen(true);
+    else setOpen(false);
   };
 
   const selectPreset = (presetId) => {
