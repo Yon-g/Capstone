@@ -25,7 +25,7 @@ Pos = [0.00] * (3 * NumOfChair) # {X, Y, Heading}
 Order = ["0"] 
 status = ["0"]
 preview = ["0"]
-path = ["1","0","0","5","5","3","7","5","10","10","10"]
+path = ["1","2","1","2","3","4","10","20","30","40","5","10","15","20","50","60","70","80"]
 isWorking = [False]
 SystemIsOn = True
 
@@ -82,14 +82,15 @@ def websocket_communicate():
     # #사전에 전달받은 이미지 파일 크기만큼의 메시지(바이트) 수신
     # Map_arr = []
     # map_msg = client_sock.recv(R * C + 2)
-    map_msg = map_msg.decode('utf-8')
-    t_pos = 0
-    Map_arr = []
-    for _ in range(R):
-        Map_arr.append()
-    # Map_arr.append(list(row.decode('utf-8')))
-    # totalProcess(Map_arr,'static/map.png')
+    # map_msg = map_msg.decode('utf-8')[2:]
+    # t_pos = 0
+    # Map_arr = []
+    # for _ in range(R):
+    #     line = map_msg[t_pos:t_pos+C]
+    #     t_pos += C
+    #     Map_arr.append(list(line))
     
+    # totalProcess(Map_arr,'static/map.png')
     # client_sock.send('Map Image received'.encode('utf-8'))
     SystemIsOn = True
 
@@ -121,7 +122,6 @@ def websocket_communicate():
             Order[0] = "0"
             status[0] = "0"
 
-        
         #시스템 오류
         if rawData[0] == "9" :
             isWorking[0] = False
@@ -144,7 +144,7 @@ def changingGlobal():
     global Pos, NumOfChair
     while(True):
         for i in range(len(Pos)):
-            Pos[i] = random.randint(10)
+            Pos[i] = random.randint(1,99)
         time.sleep(0.1)
 
 @app.route("/")
@@ -213,29 +213,27 @@ def socket_Order():
 def serve_map_image():
     return send_from_directory('static','map_image.png')
 
-@app.route('/unnamed')
-def unnamed_serve_api():
-    randOpt = 0.0
-    return jsonify(randOpt)
-
 @app.route('/route-data/',methods=['GET'])
-# id, x1, y1, x2, y2, x3, y3
+# id, L, x1, y1, x2, y2, x3, y3,...
 def serve_route_data():
     global path
-    if path[0] == "0" : 
-        return jsonify({'path' : '-1'})
-    else : 
-        route_arr = {}
-        route_arr['id'] = 1
-        for i in range(1,len(path)):
-            tmp = ""
-            if i % 2 != 0:
-                tmp += 'x'
+    route_arr = []
+    L = int(path[1])
+    t_pos = 2
+    for i in range(4):
+        t_dic = {}
+        t_dic['id'] = str(i+1)
+        tmp_arr = path[t_pos:t_pos + 2 * L]
+        t_pos += 2 * L
+        for j in range(2*L):
+            t_s = ""
+            if j % 2 == 0:
+                t_s += "x"
             else :
-                tmp += 'y'
-            tmp += str((i-1) // 2)
-            route_arr[tmp] = path[i]
-        return jsonify(route_arr)
+                t_s += "y"
+            t_dic[t_s + str(int(j//2 + 1))] = tmp_arr[j]
+        route_arr.append(t_dic)
+    return jsonify(route_arr)
 
 #MAIN
 if __name__ == '__main__':
