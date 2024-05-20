@@ -4,7 +4,7 @@ import Marker from "../Marker";
 import { MessageOutlined, ShopOutlined, SettingOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 
 const MapComponet = ({ turtlebots }) => {
-  const imageUrl = "http://192.168.0.158:5000/map-image/";
+  const imageUrl = "http://192.168.0.130:5000/map-image/";
   // const [testturtlebot, setTestturtlebot] = useState([{ id: 1, lat: 1, lng: 1, heading: 0 }]);
   console.log(turtlebots);
   return (
