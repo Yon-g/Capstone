@@ -15,7 +15,7 @@ const Marker = ({ lat, lng }) => {
   }, [lat, lng]); //lat 또는 lng가 변경될 때마다 실행
 
   return (
-    <StyledMarker style={{ left: `${lat}%`, top: `${lng}%` }}>📍</StyledMarker>
+    <StyledMarker style={{ left: `${lat}px`, top: `${lng}px` }}>📍</StyledMarker>
   );
 };
 

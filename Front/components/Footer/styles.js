@@ -14,6 +14,11 @@ export const StyledFooter = styled(Layout.Footer)`
 export const StyledMoveButton = styled(Button)`
   // font-size: 1.2em;
   margin-top: 8px;
+  @media (min-width: 820px) and (max-width: 1179px) {
+    width : 150px;
+    height: 60%;
+    font-size: 180%;
+  }
 `;
 
 export const StyledApplyButton = styled(Button)`
@@ -33,6 +38,12 @@ export const StyledApplyButton = styled(Button)`
     background-color: green;
     border-color: green;
     outline: none; // 포커스 테두리 제거
+  }
+
+  @media (min-width: 820px) and (max-width: 1179px) {
+    width : 150px;
+    height: 60%;
+    font-size: 180%;
   }
 `;
 
@@ -54,6 +65,12 @@ export const StyledStopButton = styled(Button)`
     background-color: #ff6347;
     border-color: #ff6347;
     outline: none; // 포커스 테두리 제거
+  }
+
+  @media (min-width: 820px) and (max-width: 1179px) {
+    width : 150px;
+    height: 60%;
+    font-size: 180%;
   }
 `;
 
@@ -78,10 +95,11 @@ export const StyledPreset = styled.div`
   align-items: center; /* 세로 중앙 정렬 */
   padding: 6px;
   font-weight: 500;
-
   &:hover {
     background-color: #d0d0d0; /* 마우스를 올렸을 때의 배경색 */
   }
+  height: 20%;
+  font-size : 24px;
 `;
 
 
@@ -91,7 +109,9 @@ export const StyledPresetHead = styled.div`
   font-weight: 700;
   display: flex;
   justify-content: space-between; /* 모든 자식 요소를 양쪽 끝으로 정렬 */
-  width: 100%; /* 전체 너비 사용 */
+  width: 98%; /* 전체 너비 사용 */
+  height: 20%;
+  font-size : 25px;
 `;
 
 export const StyledPreview = styled(Button)`
@@ -115,3 +135,10 @@ export const StyledPreviewIcon = styled(SearchOutlined)`
     border-color: green;
 `;
 
+// export const styledIconButton = styled(IconButton)`
+//   @media (min-width: 820px) and (max-width: 1179px) {
+//     width : 150px;
+//     height: 50%;
+//     font-size: 180%;
+//   }
+// `;

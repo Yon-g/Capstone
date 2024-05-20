@@ -50,15 +50,16 @@ export default function LayoutComponet() {
     // Turtlebot의 위치 정보를 비동기적으로 가져오는 함수
     const fetchTurtlebotPositions = async () => {
       try {
-        const response = await fetch("http://192.168.0.130:5000/socket_Pos");
+        const response = await fetch("http://192.168.0.158:5000/socket_Pos");
         const data = await response.json();
-        const updatedTurtlebots = data.map((turtlebot) => ({
-          id: turtlebot.id,
-          lat: turtlebot.x,
-          lng: turtlebot.y,
-          heading: turtlebot.heading,
-        }));
-
+        const updatedTurtlebots = data.map(turtlebot => {
+          return {
+            id: turtlebot.id,
+            lat: turtlebot.x,
+            lng: turtlebot.y,
+            heading: turtlebot.heading
+          };
+        });
         setTurtlebots(updatedTurtlebots);
       } catch (error) {
         console.error("TurtleBot position fetching error: ", error);
@@ -77,6 +78,11 @@ export default function LayoutComponet() {
     };
   }, []);
 
+  useEffect(() => {
+    // console.log(turtlebots);
+  }, [turtlebots]);
+
+
   // useEffect(() => {
   //   // isError가 true일 때 alert를 통해 사용자에게 알림
   //   console.log(isError);
@@ -89,7 +95,7 @@ export default function LayoutComponet() {
   return (
     <StyledLayout>
       <Header></Header>
-      <Content></Content>
+      {/* <Content></Content> */}
       <MapComponet turtlebots={turtlebots}></MapComponet>
       <FooterComponents order={order}></FooterComponents>
     </StyledLayout>

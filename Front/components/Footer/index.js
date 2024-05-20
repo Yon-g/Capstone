@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { StyledFooter, StyledMoveButton, StyledStopButton, StyledModal, StyledPreset, StyledPresetHead, StyledApplyButton, StyledPreview, StyledPreviewIcon } from "./styles";
+import { StyledFooter, StyledMoveButton, StyledStopButton, StyledModal, StyledPreset, StyledPresetHead, StyledApplyButton, StyledPreview, StyledPreviewIcon, styledIconButton } from "./styles";
 import IconButton from "../IconButtonComponent";
 import PresetModal from "../Modal";
-import { MessageOutlined, ShopOutlined, SettingOutlined } from "@ant-design/icons";
+import { MessageOutlined, ShopOutlined, SettingOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 
 export default function FooterComponents({ order }) {
   const isDisabled = Number(order) !== 0;
@@ -82,13 +82,14 @@ export default function FooterComponents({ order }) {
             <div style={{ flexGrow: 1, marginLeft: '15px' }}>Preset</div>
             <div style={{ color: 'red', marginTop: '-8px', marginRight: '-8px', width: '20px' }} onClick={closeModal}>x</div>
           </StyledPresetHead>
-          {[1, 2, 3, 4].map((presetId) => (
+          {["1. 은재민", "2. 송승헌", "3. 김용원", "4. 김요셉"].map((presetContent, presetId) => (
             <StyledPreset
               key={presetId}
               onClick={() => selectPreset(presetId)}
               style={{ backgroundColor: selectedPreset === presetId ? '#a9a9a9' : 'transparent' }} // 조건부 스타일 적용
             >
-              <p style={{ margin: '0px', marginLeft: '53px' }}>{presetId}. 정리{presetId}</p>
+              {/* <p style={{ margin: '0px', marginLeft: '90px' }}>{presetId}. 정리{presetId}</p> */}
+              <p style={{ margin: '0px', marginLeft: '90px' }}>{presetContent}</p>
               {selectedPreset === presetId ? <StyledPreview type="primary" shape="circle" icon={<StyledPreviewIcon />} onClick={(e) => { e.stopPropagation(); closeModal(); }} /> : null}
             </StyledPreset>
           ))}
@@ -111,7 +112,7 @@ export default function FooterComponents({ order }) {
           </StyledMoveButton> // 기존 Preset Move 버튼
         )}
         <IconButton icon={<SettingOutlined />}></IconButton>
-        <IconButton icon={<ShopOutlined />}></IconButton>
+        <IconButton icon={<QuestionCircleOutlined />}></IconButton>
         {/* <StyledPreview type="primary" shape="circle" icon={<StyledPreviewIcon />} /> */}
       </StyledFooter>
       {/* <PresetModal open={open} setOpen={setOpen}></PresetModal> */}

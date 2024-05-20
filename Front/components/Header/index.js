@@ -1,6 +1,12 @@
-import React from "react";
-import { StyledHeader } from "./styles";
+import React, { useState } from "react";
+import { StyledHeader, StyledKOREA, StyledTECH } from "./styles";
 
 export default function Header_Componet() {
-  return <StyledHeader></StyledHeader>;
+  const [headerName, setHeaderName] = useState("KOREA")
+  return <StyledHeader>
+    <div style={{ width: '100%' }}>
+      <StyledKOREA>KOREA</StyledKOREA>
+      <StyledTECH>TECH</StyledTECH>
+    </div>
+  </StyledHeader>;
 }
