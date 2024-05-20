@@ -18,6 +18,7 @@ export const StyledMoveButton = styled(Button)`
     width : 150px;
     height: 60%;
     font-size: 180%;
+    margin-bottom:5px;
   }
 `;
 
@@ -44,6 +45,7 @@ export const StyledApplyButton = styled(Button)`
     width : 150px;
     height: 60%;
     font-size: 180%;
+    margin-bottom:5px;
   }
 `;
 
@@ -71,6 +73,7 @@ export const StyledStopButton = styled(Button)`
     width : 150px;
     height: 60%;
     font-size: 180%;
+    margin-bottom:5px;
   }
 `;
 

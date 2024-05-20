@@ -7,7 +7,7 @@ export const StyledIconButton = styled(Button)`
   }
    @media (min-width: 820px) and (max-width: 1179px) {
     width : 70px;
-    height: 50%;
+    height: 70%;
     font-size: 180%;
   }
 `;

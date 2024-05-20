@@ -10,5 +10,6 @@ export const StyledMapContainer = styled.div`
     height: 100%;
     object-fit: contain;
   }
-  background-color: rgb(205, 205, 205);
+  background-color: rgb(128, 128, 128);
+  // background-color: blue;
 `;

@@ -16,10 +16,23 @@ export const StyledHeader = styled(Layout.Header)`
 export const StyledKOREA = styled.span`
   color: black;
   font-size: 250%;
-  text-align: middle;
+  text-align: center;
+  font-weight: 500;
 `;
 
 export const StyledTECH = styled.span`
   color: orange;
   font-size: 250%;
+  text-align: center;
+  font-weight: 500;
 `;
+
+export const Styledtitle = styled.p`
+  margin-left: 10px;
+  font-size: 150%;
+  // text-align: center;
+  // font-weight: 500;
+`;
+
+
+
