@@ -12,7 +12,8 @@ import random
 
 Address = {'IP_webserver' : '192.168.0.130',
            'IP_ROS' : '192.168.0.146',
-           'PORT_socket' : 8000}
+           'PORT_socket1' : 8000,
+           'PORT_socket2' : 8001}
 
 NumOfChair = 4
 
@@ -32,9 +33,9 @@ SystemIsOn = True
 def websocket_preview():
     global preview, path
     client_sock=socket(AF_INET, SOCK_STREAM)
-
+    
     try:
-        client_sock.connect((Address['IP_ROS'], 8000)) #용원 ROS돌리는 IP, Port
+        client_sock.connect((Address['IP_ROS'], 8001)) #용원 ROS돌리는 IP, Port
 
     except ConnectionRefusedError:
         print('좌표 전송 서버에 연결할 수 없습니다.')
@@ -46,8 +47,6 @@ def websocket_preview():
 
     msg = client_sock.recv(128)
     client_sock.send('Connection Success'.encode('utf-8'))
-
-    client_sock.send('Map Image received'.encode('utf-8'))
     SystemIsOn = True
 
     msgFrmROS = client_sock.recv(128)
@@ -75,19 +74,19 @@ def websocket_communicate():
     client_sock.send('Connection Success'.encode('utf-8'))
 
     #맵 파일 수신 ==>>> 수정필요 / 100x100 배열로 수정
-    imgSize = client_sock.recv(1024)
-    Size = int(imgSize.decode('utf-8'))
-    print(Size)
-    client_sock.send('Img Size recieved'.encode('utf-8'))
+    # imgSize = client_sock.recv(1024)
+    # R,C = map(int,imgSize.decode('utf-8').split())
+    # print(R, C)
+    # client_sock.send('Img Size recieved'.encode('utf-8'))
 
     # #사전에 전달받은 이미지 파일 크기만큼의 메시지(바이트) 수신
-    Map_arr = []
-    for _ in range(Size):
-        row = client_sock.recv(1024)
-        Map_arr.append(list(row.decode('utf-8')))
-    totalProcess(Map_arr,'static/map.png')
+    # Map_arr = []
+    # for _ in range(Size):
+    #     row = client_sock.recv(1024)
+    #     Map_arr.append(list(row.decode('utf-8')))
+    # totalProcess(Map_arr,'static/map.png')
     
-    client_sock.send('Map Image received'.encode('utf-8'))
+    # client_sock.send('Map Image received'.encode('utf-8'))
     SystemIsOn = True
 
     #터틀봇 좌표 수신 및 명령 전달
@@ -101,7 +100,16 @@ def websocket_communicate():
         for i in range(NumOfChair * 3):
             Pos[i] = rawData[i + 1]
 
-        msg2ROS = "0"
+        print(Pos[0:3])
+        print(Pos[3:6])
+        print(Pos[6:9])
+        print(Pos[9:])
+        print("============================================")
+
+        #작업시작시
+        if rawData[0] == "7" :
+            isWorking[0] = True
+            status[0] = Order[0]
 
         #작업종료시
         if rawData[0] == "8" :
@@ -109,10 +117,6 @@ def websocket_communicate():
             Order[0] = "0"
             status[0] = "0"
 
-        #작업시작시
-        if rawData[0] == "7" :
-            isWorking[0] = True
-            status[0] = Order[0]
         
         #시스템 오류
         if rawData[0] == "9" :
@@ -124,7 +128,7 @@ def websocket_communicate():
         # 1 ~ 4번 : 해당 작업 수행 중
         # 5번 : 작업 시작 대기 중
         # 6번 : 미리보기
-
+        msg2ROS = "0"
         if status[0] == '5':
             msg2ROS = str(Order[0])
 
@@ -232,8 +236,8 @@ def serve_route_data():
 #MAIN
 if __name__ == '__main__':
     # thread = threading.Thread(target=serverClient_getImage)
-    # thread = threading.Thread(target=websocket_communicate)
-    thread = threading.Thread(target=changingGlobal)
+    thread = threading.Thread(target=websocket_communicate)
+    # thread = threading.Thread(target=changingGlobal)
     thread.start()
     if SystemIsOn :
         app.run('0.0.0.0',port=5000,debug=False)
