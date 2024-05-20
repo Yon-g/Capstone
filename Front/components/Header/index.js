@@ -9,6 +9,5 @@ export default function Header_Componet() {
       <StyledTECH>TECH</StyledTECH>
       <Styledtitle>자동정리의자</Styledtitle>
     </div>
-    {/* <Styledtitle>자동정리의자</Styledtitle>/ */}
   </StyledHeader>;
 }

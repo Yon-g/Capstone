@@ -6,8 +6,8 @@ export const StyledHeader = styled(Layout.Header)`
   justify-content: center;
   align-items: center;
   padding: 0 20px;
-  background: #fff;
-
+  // background: #fff;
+  background: white;
   @media (max-width: 768px) {
     display: none;
   }
@@ -27,11 +27,11 @@ export const StyledTECH = styled.span`
   font-weight: 500;
 `;
 
-export const Styledtitle = styled.p`
+export const Styledtitle = styled.span`
   margin-left: 10px;
   font-size: 150%;
-  // text-align: center;
-  // font-weight: 500;
+  text-align: center;
+  font-weight: 500;
 `;
 
 

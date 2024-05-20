@@ -9,6 +9,8 @@ export const StyledFooter = styled(Layout.Footer)`
   align-items: center;
   padding: 10px 10px;
   background: white;
+  position: relative;
+  top: 120px;
 `;
 
 export const StyledMoveButton = styled(Button)`
@@ -137,11 +139,3 @@ export const StyledPreviewIcon = styled(SearchOutlined)`
   background-color: green;
     border-color: green;
 `;
-
-// export const styledIconButton = styled(IconButton)`
-//   @media (min-width: 820px) and (max-width: 1179px) {
-//     width : 150px;
-//     height: 50%;
-//     font-size: 180%;
-//   }
-// `;
