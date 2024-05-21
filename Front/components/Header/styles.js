@@ -11,6 +11,7 @@ export const StyledHeader = styled(Layout.Header)`
   @media (max-width: 768px) {
     display: none;
   }
+  height:90px;
 `;
 
 export const StyledKOREA = styled.span`
@@ -31,7 +32,7 @@ export const Styledtitle = styled.span`
   margin-left: 10px;
   font-size: 150%;
   text-align: center;
-  font-weight: 500;
+  font-weight: 1000;
 `;
 
 

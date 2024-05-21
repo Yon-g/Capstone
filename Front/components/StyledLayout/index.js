@@ -9,6 +9,8 @@ export default function LayoutComponet() {
   const [turtlebots, setTurtlebots] = useState([]);
   const [order, setOrder] = useState(0);
   const [isError, setIsError] = useState(false); // 에러 상태 추가
+  const [previewTurtlebotsPos, setPreviewTurtlebotsPos] = useState([]);
+  const [preview, setPreview] = useState(false);
 
   // isError 상태와 타이머를 관리하기 위한 ref 변수 선언
   const isErrorRef = useRef(false);
@@ -50,7 +52,7 @@ export default function LayoutComponet() {
     // Turtlebot의 위치 정보를 비동기적으로 가져오는 함수
     const fetchTurtlebotPositions = async () => {
       try {
-        const response = await fetch("http://192.168.0.130:5000/socket_Pos");
+        const response = await fetch("http://192.168.0.159:5000/socket_Pos");
         const data = await response.json();
         const updatedTurtlebots = data.map(turtlebot => {
           return {
@@ -96,8 +98,8 @@ export default function LayoutComponet() {
     <StyledLayout>
       <Header></Header>
       {/* <Content></Content> */}
-      <MapComponet turtlebots={turtlebots}></MapComponet>
-      <FooterComponents order={order}></FooterComponents>
+      <MapComponet turtlebots={turtlebots} previewTurtlebotsPos={previewTurtlebotsPos} preview={preview}></MapComponet>
+      <FooterComponents order={order} setPreviewTurtlebotsPos={setPreviewTurtlebotsPos} setPreview={setPreview} previewTurtlebotsPos={previewTurtlebotsPos}></FooterComponents>
     </StyledLayout>
   );
 }
