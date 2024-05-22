@@ -3,7 +3,7 @@ import { Layout, Button } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 
 export const StyledFooter = styled(Layout.Footer)`
-  height: 10vh;
+  height: 9vh;
   display: flex;
   justify-content: space-around;
   align-items: center;

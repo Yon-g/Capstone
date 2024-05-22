@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { StyledFooter, StyledMoveButton, StyledStopButton, StyledModal, StyledPreset, StyledPresetHead, StyledApplyButton, StyledPreview, StyledPreviewIcon, styledIconButton } from "./styles";
 import IconButton from "../IconButtonComponent";
-import PresetModal from "../Modal";
+import { MessageModal } from "../Modal";
 import { MessageOutlined, ShopOutlined, SettingOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 
-export default function FooterComponents({ order, setPreview, setPreviewTurtlebotsPos, previewTurtlebotsPos }) {
+export default function FooterComponents({ order, setPreview, setPreviewTurtlebotsPos, previewTurtlebotsPos, messageOrder, setMessageOrder }) {
   const isDisabled = Number(order) !== 0;
   const [open, setOpen] = useState(false);
   const [selectedPreset, setSelectedPreset] = useState(null); // 선택된 프리셋의 상태
@@ -17,7 +17,7 @@ export default function FooterComponents({ order, setPreview, setPreviewTurtlebo
   };
 
   const selectPreset = (presetId) => {
-    setSelectedPreset(presetId); // 선택된 프리셋의 ID를 상태로 저장
+    setSelectedPreset(presetId); // 선택된 프리셋의 ID를 상태로 저장`
   };
 
   const closeModal = () => {
@@ -113,6 +113,14 @@ export default function FooterComponents({ order, setPreview, setPreviewTurtlebo
     // }
   };
 
+  // const showModal = () => {
+  //   if (messageOrder == true)
+  //     setMessageOrder(false);
+  //   else
+  //     setMessageOrder(true);
+  //   console.log(messageOrder);
+  // };
+
   useEffect(() => { }, [open]);
 
   return (
@@ -136,6 +144,7 @@ export default function FooterComponents({ order, setPreview, setPreviewTurtlebo
           ))}
         </StyledModal> : null
       }
+      {messageOrder ? <MessageModal></MessageModal> : null}
       <StyledFooter>
         <IconButton icon={<MessageOutlined />}></IconButton>
         <IconButton icon={<ShopOutlined />}></IconButton>
@@ -153,10 +162,9 @@ export default function FooterComponents({ order, setPreview, setPreviewTurtlebo
           </StyledMoveButton> // 기존 Preset Move 버튼
         )}
         <IconButton icon={<SettingOutlined />}></IconButton>
-        <IconButton icon={<QuestionCircleOutlined />}></IconButton>
-        {/* <StyledPreview type="primary" shape="circle" icon={<StyledPreviewIcon />} /> */}
+        <IconButton icon={<QuestionCircleOutlined />} onClick={showModal}></IconButton>
       </StyledFooter>
-      {/* <PresetModal open={open} setOpen={setOpen}></PresetModal> */}
+
     </>
   );
 }

@@ -238,8 +238,8 @@ def serve_route_data():
 #MAIN
 if __name__ == '__main__':
     # thread = threading.Thread(target=serverClient_getImage)
-    thread = threading.Thread(target=websocket_communicate)
-    # thread = threading.Thread(target=changingGlobal)
+    # thread = threading.Thread(target=websocket_communicate)
+    thread = threading.Thread(target=changingGlobal)
     thread.start()
     if SystemIsOn :
         app.run('0.0.0.0',port=5000,debug=False)
