@@ -392,68 +392,98 @@ def run():
     markers_s = ["og","or","oy","ob"]
     markers_g = ["xg","xr","xy","xb"]
     
+
     a_star = AStarPlanner(ox, oy, grid_size, robot_radius)
 
-    paths = []
-    pmts = list(permutations([0,1,2,3],4))
+    fixed_paths = []
+    for i in range(num_robot):
+        fixed_paths.append(list(a_star.planning(sx[i], sy[i], gx[i], gy[i])))
 
-    for p in pmts:
-        path = []
-        for i in range(num_robot):
-            path.append(list(a_star.planning(sx[i], sy[i], gx[p[i]], gy[p[i]])))
-        paths.append(path)
+    # paths = []
+    # pmts = list(permutations([0,1,2,3],4))
 
-    print(len(paths))
-    for branch in range(len(paths)):
-        dataOfbranch = []
-        lengthOfEach = []
-        crushSpot = []
+    # for p in pmts:
+    #     path = []
+    #     for i in range(num_robot):
+    #         path.append(list(a_star.planning(sx[i], sy[i], gx[p[i]], gy[p[i]])))
+    #     paths.append(path)
 
-        for i in range(num_robot):
-            lengthOfEach.append(len(paths[branch][i][0]))
+    # print(len(paths))
+    # for branch in range(len(paths)):
+    #     dataOfbranch = []
+    #     lengthOfEach = []
+    #     crushSpot = []
 
-        for i in range(num_robot):
-            for j in range(i+1,num_robot):
-                if len(paths[branch][i][0]) >= len(paths[branch][j][0]):
-                    shorter = j
-                    longer = i
-                else :
-                    shorter = i
-                    longer = j
+    #     for i in range(num_robot):
+    #         lengthOfEach.append(len(paths[branch][i][0]))
 
-                for d in range(len(paths[branch][shorter][0])):
-                    if not isSafe(paths[branch][i][0][d],paths[branch][i][1][d],paths[branch][j][0][d],paths[branch][j][1][d],robot_radius):
-                        crushSpot.append([(shorter,longer), (paths[branch][shorter][0][d],paths[branch][shorter][1][d])])
-                        break
+    #     for i in range(num_robot):
+    #         for j in range(i+1,num_robot):
+    #             if len(paths[branch][i][0]) >= len(paths[branch][j][0]):
+    #                 shorter = j
+    #                 longer = i
+    #             else :
+    #                 shorter = i
+    #                 longer = j
+
+    #             for d in range(len(paths[branch][shorter][0])):
+    #                 if not isSafe(paths[branch][i][0][d],paths[branch][i][1][d],paths[branch][j][0][d],paths[branch][j][1][d],robot_radius):
+    #                     crushSpot.append([(shorter,longer), (paths[branch][shorter][0][d],paths[branch][shorter][1][d])])
+    #                     break
         
-        dataOfbranch = [sum(lengthOfEach),lengthOfEach,crushSpot]
-        paths[branch].append(dataOfbranch)
+    #     dataOfbranch = [sum(lengthOfEach),lengthOfEach,crushSpot]
+    #     paths[branch].append(dataOfbranch)
     
-    best = 0
-    best_score = float('INF')
-    for i in range(len(paths)):
-        tmpData = paths[i][num_robot]
-        score = tmpData[0] + max(tmpData[1])
-        eachPathCrash = [0,0,0,0]
+    # best = 0
+    # best_score = float('INF')
+    # for i in range(len(paths)):
+    #     tmpData = paths[i][num_robot]
+    #     score = tmpData[0] + max(tmpData[1])
+    #     eachPathCrash = [0,0,0,0]
 
-        for crush in tmpData[2]:
-            eachPathCrash[crush[0][0]] += 1
-            eachPathCrash[crush[0][1]] += 1
+    #     for crush in tmpData[2]:
+    #         eachPathCrash[crush[0][0]] += 1
+    #         eachPathCrash[crush[0][1]] += 1
 
-        for el in eachPathCrash:
-            score += (1.0 + (0.1) * el) * CrashWeight
+    #     for el in eachPathCrash:
+    #         score += (1.0 + (0.1) * el) * CrashWeight
 
-        print(i,"번째",tmpData[0],max(tmpData[1]),eachPathCrash,"점수 :",score)
-        if score < best_score :    
-            best = i
-            best_score = score
+    #     print(i,"번째",tmpData[0],max(tmpData[1]),eachPathCrash,"점수 :",score)
+    #     if score < best_score :    
+    #         best = i
+    #         best_score = score
             
-    dataOfBest = paths[best][num_robot]
-    print(pmts[best])
-    for el in paths[best]:
-        print("..",el)
+    # dataOfBest = paths[best][num_robot]
+    # print(pmts[best])
+    # for el in paths[best]:
+    #     print("..",el)
 
-    colors = ["-r","-g","-b","-y"]
+    # colors = ["-r","-g","-b","-y"]
+    # if True:  # pragma: no cover
+    #     for i in range(num_robot):
+    #         plt.plot(ox, oy, ".k")
+    #         plt.plot(sx[i], sy[i], markers_s[i])
+    #         plt.plot(gx[i], gy[i], markers_g[i])
+    #         plt.grid(True)
+    #         plt.axis("equal")
+
+    # if True:  # pragma: no cover
+    #     for i in range(num_robot):
+    #         plt.plot(paths[best][i][0], paths[best][i][1], colors[i])
+    #         plt.pause(0.0005)
+    #     plt.show()
+    
+    # selected_path = []
+
+    # for i in range(num_robot):
+    #     pathOfEachBot = []
+    #     for n in range(len(paths[best][i][0])):
+    #         xPos, yPos = paths[best][i][0][n],paths[best][i][1][n]
+    #         pathOfEachBot.append([xPos,yPos])
+    #     selected_path.append(reversed(pathOfEachBot))
+
+    # return selected_path
+    colors = [".g",".r",".y",".b"]
     if True:  # pragma: no cover
         for i in range(num_robot):
             plt.plot(ox, oy, ".k")
@@ -464,7 +494,7 @@ def run():
 
     if True:  # pragma: no cover
         for i in range(num_robot):
-            plt.plot(paths[best][i][0], paths[best][i][1], colors[i])
+            plt.plot(fixed_paths[i][0], fixed_paths[i][1], colors[i])
             plt.pause(0.0005)
         plt.show()
     
@@ -472,8 +502,8 @@ def run():
 
     for i in range(num_robot):
         pathOfEachBot = []
-        for n in range(len(paths[best][i][0])):
-            xPos, yPos = paths[best][i][0][n],paths[best][i][1][n]
+        for n in range(len(fixed_paths[i][0])):
+            xPos, yPos = fixed_paths[i][0][n],fixed_paths[i][1][n]
             pathOfEachBot.append([xPos,yPos])
         selected_path.append(reversed(pathOfEachBot))
 

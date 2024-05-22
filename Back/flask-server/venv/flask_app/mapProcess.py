@@ -32,6 +32,7 @@ def totalProcess(arr,fileName):
     intArr = chgDTypeInt(arr)
     smoothed = smooth_walls(intArr)
     save_img(smoothed,fileName)
+    return intArr
 
 if __name__ == '__main__':
     # 예시 벽 배열 (0은 빈 공간, 1은 벽)

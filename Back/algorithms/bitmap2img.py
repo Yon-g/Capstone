@@ -49,6 +49,7 @@ if __name__ == '__main__':
         if len(line) > 0 :
             arr.append(list(map(int,line.strip())))
     # print(arr)``
+    f.close()
     smoothed_wall = smooth_walls(arr)
     cmap1 = plt.cm.colors.ListedColormap(['gray', 'white'])
     plt.imsave('map_image.png',smoothed_wall, cmap=cmap1)
@@ -63,3 +64,4 @@ if __name__ == '__main__':
     plt.imshow(smoothed_wall, cmap=cmap1)
 
     plt.show()
+    
