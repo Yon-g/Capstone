@@ -3,14 +3,14 @@ import { Layout, Button } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 
 export const StyledFooter = styled(Layout.Footer)`
-  height: 10vh;
+  height: 9vh;
   display: flex;
   justify-content: space-around;
   align-items: center;
   padding: 10px 10px;
   background: white;
   position: relative;
-  top: 120px;
+  top: 100px;
 `;
 
 export const StyledMoveButton = styled(Button)`
@@ -27,19 +27,19 @@ export const StyledMoveButton = styled(Button)`
 export const StyledApplyButton = styled(Button)`
   // font-size: 1.2em;
   margin-top: 8px;
-  background-color: green;
-  border-color: green;
+  background-color: #66BB6A   ;
+  border-color: #66BB6A   ;
 
   // 클릭 상태에서 배경색과 테두리 색상 유지
   &:active {
-    background-color: green;
-    border-color: green;
+    background-color: #66BB6A   ;
+    border-color: #66BB6A   ;
   }
 
   // 포커스 상태에서 배경색과 테두리 색상 유지
   &:focus {
-    background-color: green;
-    border-color: green;
+    background-color: #66BB6A   ;
+    border-color: #66BB6A   ;
     outline: none; // 포커스 테두리 제거
   }
 
@@ -91,6 +91,9 @@ export const StyledModal = styled.div`
   transform: translate(-50%, -50%); // 중앙 정렬을 위해 자신의 크기의 반만큼 이동
   z-index: 1000; // 다른 요소들 위에 위치하도록 z-index 값을 높임
   border-radius: 4px;
+  @media (min-width: 820px) and (max-width: 1179px) {
+    top: 78.3%; // 상단으로부터 50% 위치에 배치
+  }
 `;
 
 
@@ -121,21 +124,58 @@ export const StyledPresetHead = styled.div`
 
 export const StyledPreview = styled(Button)`
   min-width: 10px;
-  width: 20px;
-  min-height: 10px;
-  height: 20px;
-  display: flex; /* Flex 컨테이너 설정 */
-  justify-content: center; /* 가로축에서 중앙 정렬 */
-  align-items: center; /* 세로축에서 중앙 정렬 */
-  background-color: green;
-    border-color: green;
-`;
-
-export const StyledPreviewIcon = styled(SearchOutlined)`
-  min-width: 10px;
   width: 15px;
   min-height: 10px;
   height: 15px;
-  background-color: green;
-    border-color: green;
+  display: flex; /* Flex 컨테이너 설정 */
+  justify-content: center; /* 가로축에서 중앙 정렬 */
+  align-items: center; /* 세로축에서 중앙 정렬 */
+  background-color: #66BB6A;
+  border-color: #66BB6A;
+  // 클릭 상태에서 배경색과 테두리 색상 유지
+  &:active {
+    background-color: #66BB6A;
+    border-color: #66BB6A;
+  }
+
+  // 포커스 상태에서 배경색과 테두리 색상 유지
+  &:focus {
+    background-color: #66BB6A;
+    border-color: #66BB6A;
+    outline: none; /* 포커스 테두리 제거 */
+  }
+
+  &:hover {
+       background-color: #66BB6A;
+       border-color: #66BB6A;
+    }
+
+  @media (min-width: 820px) and (max-width: 1179px) {
+    height: 40px;
+    width: 40px;
+  }
+`;
+
+
+export const StyledPreviewIcon = styled(SearchOutlined)`
+  // min-width: 10px;
+  // width: 15px;
+  // min-height: 10px;
+  // height: 15px;
+  background-color: #66BB6A;
+  border-color: #66BB6A;
+  // 클릭 상태에서 배경색과 테두리 색상 유지
+  &:active {
+    background-color: #66BB6A;
+    border-color: #66BB6A;
+  }
+
+  // 포커스 상태에서 배경색과 테두리 색상 유지
+  &:focus {
+    background-color: #66BB6A;
+    border-color: #66BB6A;
+    outline: none; // 포커스 테두리 제거
+  }
+  @media (min-width: 820px) and (max-width: 1179px) {
+    font-size: 170%;
 `;
