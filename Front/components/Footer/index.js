@@ -96,7 +96,7 @@ export default function FooterComponents({ order, setPreview, setPreviewTurtlebo
       }
       // 서버로부터 받은 위치 정보
       const data = await response.json();
-      // console.log(data); // 서버로부터 받은 데이터 확인
+      console.log(data); // 서버로부터 받은 데이터 확인
 
       // 받은 위치 정보를 상태에 저장하여 화면에 표시
       const previewTurtlebots = data.map((previewturtlebot) => {
