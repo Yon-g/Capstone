@@ -13,9 +13,22 @@ def communication_with_server(self):
             print('연결 완료')
         
         # /map 보내기과정 필요
+        
         # 1. 맵크기 전송
         # 2. 맵 전송
+
+        msg = ""
+        mapSize = ""
+
+        f = open("fileName",'r')
+        lines = f.readlines()
         
+        mapsize += 
+        for line in lines:
+            if len(line) > 0 :
+                arr.append(list(map(int,line.strip())))
+        
+
         #도착좌표 전송과정
         goal = [[20.0, 50.0, 0.0], #이렇게 배열 있다고 치고
                 [40.0, 20.0, 0.0],
@@ -41,7 +54,7 @@ def communication_with_server(self):
         for i in range(len(side)):
             for j in range(len(side[0])):
                 msg += (" " + str(side[i][j]))
-        
+
         connectionSock.send(msg.encode('utf-8'))
         afterSidePos = connectionSock.recv(1024).decode('utf-8')
 
@@ -59,9 +72,10 @@ def communication_with_server(self):
             if self.user_command in (1,2) : #이때는 인덱스 4개가 포함된 메시지
                 move_index = list(map(int,client_msg[2:].strip().split()))
                 # move index => 도착점 (0 1 2 3 4 5) 중 4개
+                # ex) move_index = [0, 1, 2, 3]
                 if self.user_command == "1":
                     pass #이때는 도착점 0~5 중 4개 인덱스
-                else :
+                else : #코너에 이동하는 프리셋
                     pass #이때는 코너점 0~3 중 4개 인덱스
 
             elif self.user_command == 9:
