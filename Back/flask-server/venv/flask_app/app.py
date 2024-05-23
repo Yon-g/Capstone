@@ -219,14 +219,22 @@ def preview_click_coordinates():
     print("*" * 100)
     print("preview received:", preview_req)
     print("*" * 100)
+    print(type(preview_req))
     
     if AstarPlanner == False:
         return jsonify({"status": "failed", "message": "planner has not been generated"})
-
     elif preview_req not in ('1','2','3','4'):
         return jsonify({"status": "failed", "message": "worng preview number posted"})
 
     path_data = []
+    for i in range(NumOfChair):
+        tmp_dict = {}
+        tmp_dict['id'] = str(i)
+        tmp_dict['x'] = sidePos[i][1]
+        tmp_dict['y'] = sidePos[i][0]
+        tmp_dict['heading'] = sidePos[i][2]
+        path_data.append(tmp_dict)
+    return path_data
 
     if preview_req == '1' or preview_req == '2':
         # if preview_req == '0':
