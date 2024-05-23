@@ -20,7 +20,3 @@ export function MessageModal(props) {
     </StyledModal>
   );
 }
-
-
-
-<StopOutlined />

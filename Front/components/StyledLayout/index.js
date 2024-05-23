@@ -15,41 +15,42 @@ export default function LayoutComponet() {
   const [preview, setPreview] = useState(false);
 
   // 이전 order 값을 저장하는 ref 변수 선언
-  const previousOrderRef = useRef(null);
+  const previousOrderRef = useRef(-1);
 
   //작업 명령 상태 정보를 비동기적으로 가져오는 함수
   useEffect(() => {
     const fetchTurtlebotOrder = async () => {
       try {
-        const response = await fetch("http://192.168.0.130:5000/socket_order");
+        const response = await fetch("http://192.168.0.159:5000/socket_order");
         const data = await response.json();
-        const newOrder = data.order;
+        const newOrder = data.status;
+        console.log("서버에서 받는 데이터:", newOrder);
 
         // 이전 order와 새로 받아온 order 비교
-        if (newOrder !== previousOrderRef.current) {
+        if (newOrder != previousOrderRef.current) {
           setOrder(newOrder);
-          console.log("서버에서 받는 데이터:", newOrder);
 
-          if (newOrder === 5) { // 0: 동작 안하고 있음 / 5: 작업중지 / 7: 시작 / 8: 종료 / 9: 시스템 오류
+          if (newOrder == 5) { // 0: 동작 안하고 있음 / 5: 작업중지 / 7: 시작 / 8: 종료 / 9: 시스템 오류
             setMessage("이동을 종료합니다.");
             setMessageState(5);
             setMessageOrder(true);
-            setTimeout(() => setMessageOrder(false), 2000);
-          } else if (newOrder === 7) {
+            setTimeout(() => setMessageOrder(false), 3000);
+          } else if (newOrder == 7) {
+            console.log("hhhhhhhhhhhhhhhhhhh");
             setMessage("자율주행의자가 이동을 시작합니다.");
             setMessageState(7);
             setMessageOrder(true);
-            setTimeout(() => setMessageOrder(false), 2000);
-          } else if (newOrder === 8) {
+            setTimeout(() => setMessageOrder(false), 3000);
+          } else if (newOrder == 8) {
             setMessage("자율주행의자가 이동을 완료하였습니다!");
             setMessageState(8);
             setMessageOrder(true);
-            setTimeout(() => setMessageOrder(false), 2000);
-          } else if (newOrder === 9) {
+            setTimeout(() => setMessageOrder(false), 3000);
+          } else if (newOrder == 9) {
             setMessage("시스템 오류로 이동을 종료합니다.");
             setMessageState(9);
             setMessageOrder(true);
-            setTimeout(() => setMessageOrder(false), 2000);
+            setTimeout(() => setMessageOrder(false), 3000);
           }
         }
 

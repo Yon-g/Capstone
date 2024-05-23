@@ -1,8 +1,7 @@
 import styled from "@emotion/styled";
 import { keyframes } from "@emotion/react";
 
-
-// 애니메이션 정의
+// 나타나는 애니메이션 정의
 const slideDown = keyframes`
   from {
     transform: translate(-50%, -60%);
@@ -18,31 +17,30 @@ const slideDown = keyframes`
 const fadeOut = keyframes`
   from {
     opacity: 1;
+    transform: translate(-50%, -50%);
   }
   to {
     opacity: 0;
+    transform: translate(-50%, -60%); // 위쪽으로 조금 이동
   }
 `;
 
 export const StyledModal = styled.div`
     width: 500px;
     height: 60px;
-    // background: white;
     background-color: rgba(255, 255, 255, 0.8);
     border: 1px solid black;
     display: flex;
     text-align: center;
-    flex-direction: column; // 자식 요소들을 수직 방향으로 정렬합니다.
-    justify-content: center; // 자식 요소들을 수직 중앙으로 정렬합니다.
-    position: absolute; // 화면에 고정
-    top: 11.47%; // 상단으로부터 50% 위치에 배치
-    left: 50%; // 좌측으로부터 50% 위치에 배치
-    transform: translate(-50%, -50%); // 중앙 정렬을 위해 자신의 크기의 반만큼 이동
-    z-index: 1000; // 다른 요소들 위에 위치하도록 z-index 값을 높임
+    flex-direction: column;
+    justify-content: center;
+    position: absolute;
+    top: 11.47%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
     border-radius: 8px;
-    animation:
-    ${slideDown} 0.5s ease-out, // 나타나는 애니메이션
-    ${fadeOut} 0.5s ease-out 2s; // 3초 뒤 사라지는 애니메이션
+    animation: ${slideDown} 0.5s ease-out, ${fadeOut} 1s ease-out 3s, 3s;  // 나타남과 사라짐을 분리하여 적용
     animation-fill-mode: forwards; // 애니메이션 종료 후 상태 유지
 `;
 
@@ -51,4 +49,3 @@ export const StyledMessage = styled.p`
    font-weight: 700; 
    font-size: 150%; 
 `;
-

@@ -311,6 +311,8 @@ def socket_Pos():
 @app.route("/socket_order/",methods=['GET'])
 def socket_Order():
     global status
+    
+    # return jsonify({'status':"7"})
     return jsonify({'status':status[0]})
 
 @app.route('/map-image/')
