@@ -227,16 +227,8 @@ def preview_click_coordinates():
         return jsonify({"status": "failed", "message": "worng preview number posted"})
 
     path_data = []
-    for i in range(NumOfChair):
-        tmp_dict = {}
-        tmp_dict['id'] = str(i)
-        tmp_dict['x'] = sidePos[i][1]
-        tmp_dict['y'] = sidePos[i][0]
-        tmp_dict['heading'] = sidePos[i][2]
-        path_data.append(tmp_dict)
-    return path_data
 
-    if preview_req == '1' or preview_req == '2':
+    if preview_req == '2' or preview_req == '3':
         # if preview_req == '0':
         #     for i in (1,2,4,5):
         #         gx.append(goalPos['x'][i])
@@ -269,7 +261,7 @@ def preview_click_coordinates():
         j = 0
         for i in goalSet:
             tmp_dict = {}
-            tmp_dict['id'] = str(j)
+            tmp_dict['id'] = str(j + 1)
             tmp_dict['x'] = goalPos[i][1]
             tmp_dict['y'] = goalPos[i][0]
             tmp_dict['heading'] = AS.radian2degree(float(goalPos[i][2]))
@@ -277,27 +269,35 @@ def preview_click_coordinates():
             path_data.append(tmp_dict)
             
     elif preview_req == '4' :
-        gx = []; gy = []; sx = []; sy = []
-        for i in range(NumOfChair):
-            sx.append(float(Pos[3*i]))
-            sy.append(float(Pos[3*i + 1]))
-        for i in (1,2,4,5):
-                gx.append(float(goalPos[i][0]))
-                gy.append(float(goalPos[i][1]))
-
-        paths, start = AS.get_best_path(AstarPlanner,sx,sy,gx,gy)
         for i in range(NumOfChair):
             tmp_dict = {}
-            tmp_dict['id'] = str(start[i])
-            tmp_dict['x'] = goalPos[i][1]
-            tmp_dict['y'] = goalPos[i][0]
-            tmp_dict['heading'] = AS.radian2degree(float(goalPos[i][2]))
+            tmp_dict['id'] = str(i + 1)
+            tmp_dict['x'] = sidePos[i][1]
+            tmp_dict['y'] = sidePos[i][0]
+            tmp_dict['heading'] = AS.radian2degree(float(sidePos[i][2]))
             path_data.append(tmp_dict)
+
+        # gx = []; gy = []; sx = []; sy = []
+        # for i in range(NumOfChair):
+        #     sx.append(float(Pos[3*i]))
+        #     sy.append(float(Pos[3*i + 1]))
+        # for i in (1,2,4,5):
+        #         gx.append(float(goalPos[i][0]))
+        #         gy.append(float(goalPos[i][1]))
+
+        # paths, start = AS.get_best_path(AstarPlanner,sx,sy,gx,gy)
+        # for i in range(NumOfChair):
+        #     tmp_dict = {}
+        #     tmp_dict['id'] = str(start[i])
+        #     tmp_dict['x'] = goalPos[i][1]
+        #     tmp_dict['y'] = goalPos[i][0]
+        #     tmp_dict['heading'] = AS.radian2degree(float(goalPos[i][2]))
+        #     path_data.append(tmp_dict)
     
     else :
         for i in range(NumOfChair):
             tmp_dict = {}
-            tmp_dict['id'] = str(start[i])
+            tmp_dict['id'] = str(i + 1)
             tmp_dict['x'] = sidePos[i][1]
             tmp_dict['y'] = sidePos[i][0]
             tmp_dict['heading'] = AS.radian2degree(float(sidePos[i][2]))
