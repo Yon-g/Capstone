@@ -14,7 +14,7 @@ Address = {'IP_webserver' : '192.168.0.130',
 
 NumOfChair = 4
 SystemIsOn = True
-AstarPlanner = False
+AstarPlanner = True
 
 app = Flask(__name__)
 
@@ -22,11 +22,11 @@ app = Flask(__name__)
 cors = CORS(app, resources={r"/*/": {"origins": "*"}})
 
 map_saved = []
-goalPos = {}
 Pos = [0.00] * (3 * NumOfChair) # {X, Y, Heading}
+sidePos = [[0.00 for _ in range(3)] for _ in range(NumOfChair)]
+goalPos = [[0.00 for _ in range(3)] for _ in range(6)]
 Order = ["0"] 
 status = ["0"]
-preview = []
 isWorking = [False]
 
 def generate_PathPlanner(map_arr):
@@ -34,7 +34,7 @@ def generate_PathPlanner(map_arr):
     return newPlanner
 
 def websocket_communicate():
-    global Pos, Order, Address, NumOfChair, isWorking, SystemIsOn, status, map_saved, AstarPlanner, goalPos
+    global Pos, Order, Address, NumOfChair, isWorking, SystemIsOn, status, map_saved, AstarPlanner, goalPos, sidePos
 
     client_sock=socket(AF_INET, SOCK_STREAM)
 
@@ -68,12 +68,24 @@ def websocket_communicate():
         Map_arr.append(list(line))
 
     #도착점 좌표 6개 수령 메시지필요
-    goal = [20.0, 50.0, 40.0, 20.0, 60.0, 20.0, 40.0, 80.0, 60.0, 80.0, 80,0, 50.0]
-    goalPos['x'] = []; goalPos['y'] = []
-    for i in range(0,len(goal),2):
-        goalPos['x'].append(float(goal[i]))
-        goalPos['y'].append(float(goal[i+1]))
-
+    goal = [20.0, 50.0, 0.0, 40.0, 20.0, 0.0, 60.0, 20.0, 0.0, 40.0, 80.0, 0.0, 60.0, 80.0, 0.0, 80,0, 50.0, 0.0]
+    for i in range(len(goalPos)):
+        tmp = []
+        tmp.append(goal[i*3])
+        tmp.append(goal[i*3 + 1])
+        tmp.append(goal[i*3 + 2])
+        goalPos[i] = tmp
+    
+    #코너 4개 위치 수령 메시지 필요
+    side = [10.0,10.0,0.0,10.0,70.0,0.0,70.0,10.0,0.0,70.0,70.0,0.0]
+    for i in range(len(sidePos)):
+        tmp = []
+        tmp.append(side[i*3])
+        tmp.append(side[i*3 + 1])
+        tmp.append(side[i*3 + 2])
+        sidePos[i] = tmp
+    
+    
     map_saved = totalProcess(Map_arr,'static/map.png')
     AstarPlanner = generate_PathPlanner(map_saved)
     
@@ -113,21 +125,24 @@ def websocket_communicate():
             isWorking[0] = False
             status[0] = '9'
             Order[0] = '0'
+        
+        if rawData[0] in ('7','8','9'):
+            time.sleep(0.2)
 
         # 0번 : 작업 실행 없음, 작업 요청 가능
         # 1 ~ 4번 : 해당 작업 수행 중
         # 5번 : 작업 시작 대기 중
         msg2ROS = str(Order[0])
-        if status[0] == '5':
-            if Order[0] == '1':
+        if status[0] == '6':
+            if Order[0] == '2':
                 botNum = [0,1,2,3]
                 goalNum = [1,2,4,5]
 
-            elif Order[0] == '2':
+            elif Order[0] == '3':
                 botNum = [0,1,2,3]
                 goalNum = [0,1,3,4]
 
-            elif Order[0] == '3':
+            elif Order[0] == '4':
                 sx = []; sy = []; gx = []; gy = []
                 goalNum = [1,2,4,5]
                 
@@ -141,7 +156,11 @@ def websocket_communicate():
 
                 paths, start = AS.get_best_path(AstarPlanner,sx,sy,gx,gy)
                 botNum = [start[i] for i in range(NumOfChair)]
-            
+
+            else : #이경우에는 사이드 좌표로 써야함
+                botNum = [0,1,2,3]
+                goalNum = [0,1,2,3]
+
             for i in range(NumOfChair):
                 msg2ROS += (" " + str(botNum[i]) + " " + str(goalNum[i]))
 
@@ -177,10 +196,10 @@ def handle_click_coordinates():
     print("Coordinates received:", user_order)
     print(isWorking[0], user_order)
     #작업 중 종료요청 or 미작업 중 1~3 요청
-    if (not isWorking[0] and user_order != 4) or (isWorking[0] and user_order == '4'):
+    if (not isWorking[0] and user_order != '5') or (isWorking[0] and user_order == '5'):
         #작업 메시지 확인 시
         Order[0] = user_order
-        status[0] = '5'
+        status[0] = '6'
         print("*" * 100)
         print(Order[0])
         print("*" * 100)
@@ -191,72 +210,89 @@ def handle_click_coordinates():
 #미리보기 post
 @app.route('/preview_post/', methods=['POST'])
 def preview_click_coordinates():
-    global preview, AstarPlanner, goalPos, Pos, NumOfChair, preview
+    global preview, AstarPlanner, goalPos, Pos, NumOfChair, sidePos
     preview_req = request.json['preview']
 
     print("*" * 100)
     print("preview received:", preview_req)
     print("*" * 100)
     
-    res = []
-    res.append({"status":"failed"})
-    res.append({"x1" : "10.0", "x2" : "20.0"})``
     if AstarPlanner == False:
         return jsonify({"status": "failed", "message": "planner has not been generated"})
 
-    elif preview_req not in ('1','2','3'):
+    elif preview_req not in ('1','2','3','4'):
         return jsonify({"status": "failed", "message": "worng preview number posted"})
-
-    gx = []; gy = []; sx = []; sy = []
-    for _ in range(NumOfChair):
-        sx.append(float(Pos[3*i]))
-        sy.append(float(Pos[3*i + 1]))
 
     path_data = []
 
-    if preview_req != '3':
-        if preview_req == '1':
-            for i in (1,2,4,5):
-                gx.append(goalPos['x'][i])
-                gy.append(goalPos['y'][i])
-        else :
-            for i in (0,1,3,4):
-                gx.append(goalPos['x'][i])
-                gy.append(goalPos['y'][i])
+    if preview_req == '1' or preview_req == '2':
+        # if preview_req == '0':
+        #     for i in (1,2,4,5):
+        #         gx.append(goalPos['x'][i])
+        #         gy.append(goalPos['y'][i])
+        # elif preview_req == '1' :
+        #     for i in (0,1,3,4):
+        #         gx.append(goalPos['x'][i])
+        #         gy.append(goalPos['y'][i])
+        
+        # paths = AS.get_fixed_path(AstarPlanner,sx,sy,gx,gy)
 
-        paths = AS.get_fixed_path(AstarPlanner,sx,sy,gx,gy)
+        # for i in range(len(paths)):
+        #     tmp = paths[i]
+        #     tmp_dict = {}
+        #     tmp_dict['id'] = str(i)
+        #     for j in range(len(tmp)):
+        #         if j % 2 == 0 :
+        #             tmp_dict["y"+str(j//2 + 1)]
+        #         else :
+        #             tmp_dict["x"+str(j//2 + 1)]
+        #     path_data.append(tmp_dict)
+        # preview = path_data
 
-        for i in range(len(paths)):
-            tmp = paths[i]
+        #사이드로 보내기
+        if preview_req == '2' :
+            goalSet = [1,2,4,5]
+        elif preview_req == '3' :
+            goalSet = [0,1,3,4]
+        
+        j = 0
+        for i in goalSet:
             tmp_dict = {}
-            tmp_dict['id'] = str(i)
-            for j in range(len(tmp)):
-                if j % 2 == 0 :
-                    tmp_dict["y"+str(j//2 + 1)]
-                else :
-                    tmp_dict["x"+str(j//2 + 1)]
+            tmp_dict['id'] = str(j)
+            tmp_dict['x'] = goalPos[i][1]
+            tmp_dict['y'] = goalPos[i][0]
+            tmp_dict['heading'] = goalPos[i][2]
+            j += 1
             path_data.append(tmp_dict)
-        preview = path_data
-    
-    else :
+            
+    elif preview_req == '4' :
+        gx = []; gy = []; sx = []; sy = []
+        for i in range(NumOfChair):
+            sx.append(float(Pos[3*i]))
+            sy.append(float(Pos[3*i + 1]))
         for i in (1,2,4,5):
-                gx.append(goalPos['x'][i])
-                gy.append(goalPos['y'][i])
+                gx.append(goalPos[i][0])
+                gy.append(goalPos[i][1])
 
         paths, start = AS.get_best_path(AstarPlanner,sx,sy,gx,gy)
-        for i in range(len(paths)):
-            tmp = paths[i]
+        for i in range(NumOfChair):
             tmp_dict = {}
             tmp_dict['id'] = str(start[i])
-            for j in range(len(tmp)):
-                if j % 2 == 0 :
-                    tmp_dict["y"+str(j//2 + 1)] = tmp[j]
-                else :
-                    tmp_dict["x"+str(j//2 + 1)] = tmp[j]
+            tmp_dict['x'] = goalPos[i][1]
+            tmp_dict['y'] = goalPos[i][0]
+            tmp_dict['heading'] = goalPos[i][2]
             path_data.append(tmp_dict)
-        preview = path_data
-    preview
-    return jsonify({"status": "success", "message": "preview info updated", ""})
+    
+    else :
+        for i in range(NumOfChair):
+            tmp_dict = {}
+            tmp_dict['id'] = str(start[i])
+            tmp_dict['x'] = sidePos[i][1]
+            tmp_dict['y'] = sidePos[i][0]
+            tmp_dict['heading'] = goalPos[i][2]
+            path_data.append(tmp_dict)
+        
+    return jsonify(path_data)
 
 #전역변수를 사용해 실시간 웹소켓 통신으로 전달받은 좌표값을 json데이터로 반환
 @app.route("/socket_Pos/",methods=['GET'])
@@ -281,13 +317,13 @@ def socket_Order():
 def serve_map_image():
     return send_from_directory('static','map_image.png')
 
-@app.route('/route-data/',methods=['GET'])
-# id, x1, y1, x2, y2, x3, y3,... 4개
-def serve_route_data():
-    global preview
-    if len(preview) < 4:
-        return jsonify({"status": "success", "message": "preview info updated"})
-    return jsonify(preview)
+# @app.route('/route-data/',methods=['GET'])
+# # id, x1, y1, x2, y2, x3, y3,... 4개
+# def serve_route_data():
+#     global preview
+#     if len(preview) < 4:
+#         return jsonify({"status": "success", "message": "preview info updated"})
+#     return jsonify(preview)
 
 #MAIN
 if __name__ == '__main__':

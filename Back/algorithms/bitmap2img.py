@@ -42,17 +42,18 @@ def load_GetOxOy(fileName="map.txt"):
 
 if __name__ == '__main__':
     os.chdir(os.path.dirname(os.path.realpath(__file__)))
-    f = open("map2.txt",'r')
+    f = open("c.txt",'r')
     lines = f.readlines()
     arr = []
     for line in lines:
         if len(line) > 0 :
             arr.append(list(map(int,line.strip())))
+    print(len(arr),len(arr[0]))
     # print(arr)``
     f.close()
     smoothed_wall = smooth_walls(arr)
     cmap1 = plt.cm.colors.ListedColormap(['gray', 'white'])
-    plt.imsave('map_image.png',smoothed_wall, cmap=cmap1)
+    plt.imsave('map_test_image.png',smoothed_wall, cmap=cmap1)
 
     # 결과 출력
     plt.subplot(1, 2, 1)
