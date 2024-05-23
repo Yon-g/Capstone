@@ -30,9 +30,10 @@ export const StyledModal = styled.div`
     // background: white;
     background-color: rgba(255, 255, 255, 0.8);
     border: 1px solid black;
-    position: absolute;
     display: flex;
+    text-align: center;
     flex-direction: column; // 자식 요소들을 수직 방향으로 정렬합니다.
+    justify-content: center; // 자식 요소들을 수직 중앙으로 정렬합니다.
     position: absolute; // 화면에 고정
     top: 11.47%; // 상단으로부터 50% 위치에 배치
     left: 50%; // 좌측으로부터 50% 위치에 배치
@@ -43,5 +44,11 @@ export const StyledModal = styled.div`
     ${slideDown} 0.5s ease-out, // 나타나는 애니메이션
     ${fadeOut} 0.5s ease-out 2s; // 3초 뒤 사라지는 애니메이션
     animation-fill-mode: forwards; // 애니메이션 종료 후 상태 유지
+`;
+
+export const StyledMessage = styled.p`
+   margin: auto; // 수직 중앙 정렬을 위해 추가
+   font-weight: 700; 
+  //  font-size: 
 `;
 

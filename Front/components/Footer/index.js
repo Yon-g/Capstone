@@ -4,7 +4,7 @@ import IconButton from "../IconButtonComponent";
 import { MessageModal } from "../Modal";
 import { MessageOutlined, ShopOutlined, SettingOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 
-export default function FooterComponents({ order, setPreview, setPreviewTurtlebotsPos, previewTurtlebotsPos, messageOrder, setMessageOrder }) {
+export default function FooterComponents({ order, setPreview, setPreviewTurtlebotsPos, previewTurtlebotsPos, messageOrder, setMessageOrder, message, messageState }) {
   const isDisabled = Number(order) !== 0;
   const [open, setOpen] = useState(false);
   const [selectedPreset, setSelectedPreset] = useState(null); // 선택된 프리셋의 상태
@@ -144,7 +144,7 @@ export default function FooterComponents({ order, setPreview, setPreviewTurtlebo
           ))}
         </StyledModal> : null
       }
-      {messageOrder ? <MessageModal></MessageModal> : null}
+      {messageOrder ? <MessageModal message={message} messageState={messageState}> </MessageModal> : null}
       <StyledFooter>
         <IconButton icon={<MessageOutlined />}></IconButton>
         <IconButton icon={<ShopOutlined />}></IconButton>

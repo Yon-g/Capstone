@@ -15,7 +15,7 @@ export const StyledHeader = styled(Layout.Header)`
 `;
 
 export const StyledKOREA = styled.span`
-  color: black;
+  color: #00005f;
   font-size: 250%;
   text-align: center;
   font-weight: 500;
