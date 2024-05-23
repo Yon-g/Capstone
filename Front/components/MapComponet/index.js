@@ -5,7 +5,7 @@ import { MessageOutlined, ShopOutlined, SettingOutlined, QuestionCircleOutlined 
 
 const MapComponet = ({ turtlebots, previewTurtlebotsPos, preview }) => {
   const imageUrl = "http://192.168.0.159:5000/map-image/";
-  const [testturtlebot, setTestturtlebot] = useState([{ id: 1, lat: 50, lng: 50, heading: 0 }, { id: 2, lat: 60, lng: 60, heading: 0 }, { id: 3, lat: 70, lng: 70, heading: 0 }, { id: 4, lat: 80, lng: 80, heading: 0 }]);
+  const [testturtlebot, setTestturtlebot] = useState([{ id: 1, lat: 50, lng: 50, heading: 90 }, { id: 2, lat: 60, lng: 60, heading: -90 }, { id: 3, lat: 70, lng: 70, heading: 0 }, { id: 4, lat: 80, lng: 80, heading: 0 }]);
   const [color, setColor] = useState(["red", "blue", "green", "orange"])
   // console.log(turtlebots);
   return (
@@ -15,6 +15,8 @@ const MapComponet = ({ turtlebots, previewTurtlebotsPos, preview }) => {
         alt="SLAM MAP"
         style={{ position: "relative", width: "100%", height: "100%" }}
       ></img>
+
+
       {/* turtlebots 배열을 순회하며 Marker 컴포넌트를 렌더링 */}
       {testturtlebot.map((turtlebot, i) => {
         const markerColor = color[i % color.length];

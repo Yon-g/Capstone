@@ -23,8 +23,8 @@ cors = CORS(app, resources={r"/*/": {"origins": "*"}})
 
 map_saved = []
 Pos = [0.00] * (3 * NumOfChair) # {X, Y, Heading}
-sidePos = [[0.00 for _ in range(3)] for _ in range(NumOfChair)]
-goalPos = [[0.00 for _ in range(3)] for _ in range(6)]
+sidePos = [[50.00 for _ in range(3)] for _ in range(NumOfChair)]
+goalPos = [[70.00 for _ in range(3)] for _ in range(6)]
 Order = ["0"] 
 status = ["0"]
 isWorking = [False]
@@ -319,7 +319,8 @@ def socket_Pos():
 @app.route("/socket_order/",methods=['GET'])
 def socket_Order():
     global status
-    return jsonify({'status':status[0]})
+    return jsonify({'status': 7})
+    # return jsonify({'status':status[0]})
 
 @app.route('/map-image/')
 def serve_map_image():

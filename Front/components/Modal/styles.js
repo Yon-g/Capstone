@@ -40,7 +40,7 @@ export const StyledModal = styled.div`
     transform: translate(-50%, -50%);
     z-index: 1000;
     border-radius: 8px;
-    animation: ${slideDown} 0.5s ease-out, ${fadeOut} 1s ease-out 3s, 3s;  // 나타남과 사라짐을 분리하여 적용
+    animation: ${slideDown} 0.5s ease-out, ${fadeOut} 0.5s ease-out 2.5s;
     animation-fill-mode: forwards; // 애니메이션 종료 후 상태 유지
 `;
 
