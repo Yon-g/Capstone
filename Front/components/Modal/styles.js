@@ -49,6 +49,6 @@ export const StyledModal = styled.div`
 export const StyledMessage = styled.p`
    margin: auto; // 수직 중앙 정렬을 위해 추가
    font-weight: 700; 
-  //  font-size: 
+   font-size: 150%; 
 `;
 

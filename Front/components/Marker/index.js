@@ -3,7 +3,7 @@ import { StyledMarker, StyledPresetMarker } from "./style";
 import { MessageOutlined, ShopOutlined, SettingOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 
 /* Marker 스타일링 */
-export const Marker = ({ key, lat, lng, color }) => {
+export const Marker = ({ lat, lng, color }) => {
   // const [position, setPosition] = useState({ x: 0, y: 0 });
   // const [markerColor, setMarkerColor] = useState("");
 
@@ -28,7 +28,7 @@ export const Marker = ({ key, lat, lng, color }) => {
 };
 
 /* PresetMarker 스타일링 */
-export const PresetMarker = ({ key, lat, lng, color }) => {
+export const PresetMarker = ({ lat, lng, color }) => {
 
   const colors = {
     red: "#FF6F61  ",

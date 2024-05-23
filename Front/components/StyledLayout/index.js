@@ -10,37 +10,51 @@ export default function LayoutComponet() {
   const [order, setOrder] = useState(0);
   const [messageOrder, setMessageOrder] = useState(false);
   const [messageState, setMessageState] = useState(0);
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState("자율주행의자가 이동을 완료하였습니다!");
   const [previewTurtlebotsPos, setPreviewTurtlebotsPos] = useState([]);
   const [preview, setPreview] = useState(false);
 
-  // isError 상태와 타이머를 관리하기 위한 ref 변수 선언
-  const isErrorRef = useRef(false);
-  const errorTimeoutId = useRef(null);
+  // 이전 order 값을 저장하는 ref 변수 선언
+  const previousOrderRef = useRef(null);
 
   //작업 명령 상태 정보를 비동기적으로 가져오는 함수
   useEffect(() => {
     const fetchTurtlebotOrder = async () => {
-      // setModalShow(true);
       try {
-        // const response = await fetch("http://192.168.0.130:5000/socket_order");
+        const response = await fetch("http://192.168.0.130:5000/socket_order");
         const data = await response.json();
-        setOrder(data.order);
-        console.log("서버에서 받는 데이터:", data.order);
-        if (data.order == 0) { // 동작 중 : 0, 동작 완료 : 1, 오류 발생 :2 -> 어케할지 재민이랑 얘기
-          setMessage("자율주행의자가 이동을 완료하였습니다!")
-          setMessageState(0);
-          setMessageOrder(true);
-          // 3초 후에 setMessageOrder(false) 실행
-          setTimeout(() => setMessageOrder(false), 2000);
+        const newOrder = data.order;
+
+        // 이전 order와 새로 받아온 order 비교
+        if (newOrder !== previousOrderRef.current) {
+          setOrder(newOrder);
+          console.log("서버에서 받는 데이터:", newOrder);
+
+          if (newOrder === 5) { // 0: 동작 안하고 있음 / 5: 작업중지 / 7: 시작 / 8: 종료 / 9: 시스템 오류
+            setMessage("이동을 종료합니다.");
+            setMessageState(5);
+            setMessageOrder(true);
+            setTimeout(() => setMessageOrder(false), 2000);
+          } else if (newOrder === 7) {
+            setMessage("자율주행의자가 이동을 시작합니다.");
+            setMessageState(7);
+            setMessageOrder(true);
+            setTimeout(() => setMessageOrder(false), 2000);
+          } else if (newOrder === 8) {
+            setMessage("자율주행의자가 이동을 완료하였습니다!");
+            setMessageState(8);
+            setMessageOrder(true);
+            setTimeout(() => setMessageOrder(false), 2000);
+          } else if (newOrder === 9) {
+            setMessage("시스템 오류로 이동을 종료합니다.");
+            setMessageState(9);
+            setMessageOrder(true);
+            setTimeout(() => setMessageOrder(false), 2000);
+          }
         }
-        else if (data.order == 1) {
-          setMessage("자율주행의자가 이동 중 문제가 발생하여 이동이 종료됩니다.")
-          setMessageState(1);
-          setMessageOrder(true);
-          // 3초 후에 setMessageOrder(false) 실행
-          setTimeout(() => setMessageOrder(false), 2000);
-        }
+
+        // 새로운 order를 previousOrderRef에 저장
+        previousOrderRef.current = newOrder;
 
       } catch (error) {
         console.error("TurtleBot order fetching error: ", error);
@@ -66,7 +80,7 @@ export default function LayoutComponet() {
       }
     };
 
-    const orderIntervalId = setInterval(fetchTurtlebotOrder, 100);
+    const orderIntervalId = setInterval(fetchTurtlebotOrder, 50);
     const positionIntervalId = setInterval(fetchTurtlebotPositions, 100);
 
     return () => {
