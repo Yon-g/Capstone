@@ -179,10 +179,7 @@ def changingGlobal():
     while(True):
         for i in range(len(Pos)):
             Pos[i] = random.randint(1,99)
-        for i in range(NumOfChair):
-            Pos[i+2] = random.randint(0,3)
         time.sleep(0.1)
-    
 
 @app.route("/")
 def home():
@@ -322,8 +319,8 @@ def socket_Pos():
 @app.route("/socket_order/",methods=['GET'])
 def socket_Order():
     global status
-    return jsonify({'status': 7})
-    # return jsonify({'status':status[0]})
+    # return jsonify({'status': 7})
+    return jsonify({'status':status[0]})
 
 @app.route('/map-image/')
 def serve_map_image():
