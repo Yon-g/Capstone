@@ -66,6 +66,12 @@ def websocket_communicate():
         line = map_msg[t_pos:t_pos+C]
         t_pos += C
         Map_arr.append(list(line))
+    
+    map_saved = totalProcess(Map_arr,'static/map.png')
+    AstarPlanner = generate_PathPlanner(map_saved)
+    
+    client_sock.send('Map Image received'.encode('utf-8'))
+    SystemIsOn = True
 
     #도착점 좌표 6개 수령 메시지필요
     goal = [20.0, 50.0, 0.0, 40.0, 20.0, 0.0, 60.0, 20.0, 0.0, 40.0, 80.0, 0.0, 60.0, 80.0, 0.0, 80,0, 50.0, 0.0]
@@ -84,13 +90,6 @@ def websocket_communicate():
         tmp.append(side[i*3 + 1])
         tmp.append(side[i*3 + 2])
         sidePos[i] = tmp
-    
-    
-    map_saved = totalProcess(Map_arr,'static/map.png')
-    AstarPlanner = generate_PathPlanner(map_saved)
-    
-    client_sock.send('Map Image received'.encode('utf-8'))
-    SystemIsOn = True
 
     #터틀봇 좌표 수신 및 명령 전달
     while True:
@@ -264,7 +263,7 @@ def preview_click_coordinates():
             tmp_dict['id'] = str(j)
             tmp_dict['x'] = goalPos[i][1]
             tmp_dict['y'] = goalPos[i][0]
-            tmp_dict['heading'] = goalPos[i][2]
+            tmp_dict['heading'] = AS.radian2degree(float(goalPos[i][2]))
             j += 1
             path_data.append(tmp_dict)
             

@@ -23,6 +23,13 @@ robot_radius = 3.0  # [m]
 CrashWeight = 5.0
 num_robot = 4
 
+def radian2degree(radian):
+    PI = 3.141592
+    if radian >= 0 :
+        return round(180.0 - (radian / PI) * 180.0, 2)
+    else :
+        return round(180.0 + ((-radian) / PI) * 180.0, 2)
+ 
 class AStarPlanner:
 
     def __init__(self, ox, oy, resolution, rr):
