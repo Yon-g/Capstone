@@ -214,7 +214,7 @@ def handle_click_coordinates():
 @app.route('/preview_post/', methods=['POST'])
 def preview_click_coordinates():
     global preview, AstarPlanner, goalPos, Pos, NumOfChair, sidePos
-    preview_req = request.json['preview']
+    preview_req = request.json['option']
 
     print("*" * 100)
     print("preview received:", preview_req)
