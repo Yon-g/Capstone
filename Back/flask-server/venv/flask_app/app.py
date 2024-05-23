@@ -112,64 +112,67 @@ def websocket_communicate():
         #작업시작시
         if rawData[0] == "7" :
             isWorking[0] = True
-            status[0] = Order[0]
+            status[0] = "7"
 
         #작업종료시
         if rawData[0] == "8" :
             isWorking[0] = False
+            if Order[0] == "5":
+                status[0] = "5"
+            else :
+                status[0] = "8"
             Order[0] = "0"
-            status[0] = "0"
 
         #시스템 오류
         if rawData[0] == "9" :
             isWorking[0] = False
             status[0] = '9'
             Order[0] = '0'
-        
-        if rawData[0] in ('7','8','9'):
-            time.sleep(0.2)
-
+       
         # 0번 : 작업 실행 없음, 작업 요청 가능
-        # 1 ~ 4번 : 해당 작업 수행 중
-        # 5번 : 작업 시작 대기 중
-        msg2ROS = str(Order[0])
-        if status[0] == '6':
-            if Order[0] == '2':
-                botNum = [0,1,2,3]
-                goalNum = [1,2,4,5]
+        # 1번 : 작업 있음
+        # 5번 : 정지
+        # 6번 : 작동중
+        if isWorking[0] == True:
+            msg2ROS = "6" #1
+        elif rawData[0] == "0" :
+            msg2ROS = Order[0]
+            if status[0] == '6':
+                msg2ROS = "1"
+                if Order[0] == '2':
+                    botNum = [0,1,2,3]
+                    goalNum = [1,2,4,5]
 
-            elif Order[0] == '3':
-                botNum = [0,1,2,3]
-                goalNum = [0,1,3,4]
+                elif Order[0] == '3':
+                    botNum = [0,1,2,3]
+                    goalNum = [0,1,3,4]
 
-            elif Order[0] == '4':
-                sx = []; sy = []; gx = []; gy = []
-                goalNum = [1,2,4,5]
-                
+                elif Order[0] == '4':
+                    sx = []; sy = []; gx = []; gy = []
+                    goalNum = [1,2,4,5]
+
+                    for i in range(NumOfChair):
+                        sx.append(float(Pos[3*i]))
+                        sy.append(float(Pos[3*i + 1]))
+
+                    for i in goalNum:
+                        gx.append(goalPos[i][0])
+                        gy.append(goalPos[i][1])
+
+                    paths, start = AS.get_best_path(AstarPlanner,sx,sy,gx,gy)
+                    botNum = start
+
+                else : #이경우에는 사이드 좌표로 써야함
+                    goalNum = [0,1,2,3]
+
                 for i in range(NumOfChair):
-                    sx.append(float(Pos[3*i]))
-                    sy.append(float(Pos[3*i + 1]))
+                    for j in range(NumOfChair):
+                        if botNum[j] == i : 
+                            msg2ROS += (" " + str(goalNum[j]))
+                            break
 
-                for i in goalNum:
-                    gx.append(goalPos['x'][i])
-                    gy.append(goalPos['y'][i])
-
-                paths, start = AS.get_best_path(AstarPlanner,sx,sy,gx,gy)
-                botNum = [start[i] for i in range(NumOfChair)]
-
-            else : #이경우에는 사이드 좌표로 써야함
-                botNum = [0,1,2,3]
-                goalNum = [0,1,2,3]
-
-            for i in range(NumOfChair):
-                msg2ROS += (" " + str(botNum[i]) + " " + str(goalNum[i]))
-
-            else : # 종료명령
-                pass
-        else : #명령 수행중 or 없음
-            pass
         #자체적으로 인터벌 유지
-        time.sleep(0.1)
+        time.sleep(0.15)
         client_sock.send(msg2ROS.encode('utf-8'))
         
 def changingGlobal():
@@ -289,7 +292,7 @@ def preview_click_coordinates():
             tmp_dict['id'] = str(start[i])
             tmp_dict['x'] = sidePos[i][1]
             tmp_dict['y'] = sidePos[i][0]
-            tmp_dict['heading'] = goalPos[i][2]
+            tmp_dict['heading'] = sidePos[i][2]
             path_data.append(tmp_dict)
         
     return jsonify(path_data)
@@ -299,9 +302,6 @@ def preview_click_coordinates():
 def socket_Pos():
     global Pos, NumOfChair, Order, isWorking
     status_pos = []
-
-    #react에서 직전에 보낸 명령을 기억해뒀다가
-    #여기서 보내는 status랑 비교해서 상태가 달라진 걸 확인할 수 있어야 함
     for i in range(NumOfChair):
         status_pos.append({'id': i+1,'x':Pos[3*i+1],'y':Pos[3*i],'heading':Pos[3*i + 2]})
 
@@ -311,7 +311,7 @@ def socket_Pos():
 @app.route("/socket_order/",methods=['GET'])
 def socket_Order():
     global status
-    return jsonify({'order':status[0]})
+    return jsonify({'status':status[0]})
 
 @app.route('/map-image/')
 def serve_map_image():
