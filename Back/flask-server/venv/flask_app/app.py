@@ -189,7 +189,7 @@ def home():
 @app.route('/user_order', methods=['POST'])
 def handle_click_coordinates():
     global Order, isWorking
-    user_order = request.json['option']
+    user_order = str(request.json['option'])
 
     # react에서 post요청 직후에 modal, Order 버튼을 불가능하게 만들어야 함 + 작업수행중 글씨로 바꾸면 좋을듯? 
     # (ex. 직전 명령이 아직 수행중입니다. 오랜시간 대기상태가 지속될 경우, 의자의 상태와 장애물 존재 여부를 확인하세요)
@@ -213,7 +213,7 @@ def handle_click_coordinates():
 @app.route('/preview_post/', methods=['POST'])
 def preview_click_coordinates():
     global preview, AstarPlanner, goalPos, Pos, NumOfChair, sidePos
-    preview_req = request.json['option']
+    preview_req = str(request.json['option'])
 
     print("*" * 100)
     print("preview received:", preview_req)
@@ -222,7 +222,7 @@ def preview_click_coordinates():
     if AstarPlanner == False:
         return jsonify({"status": "failed", "message": "planner has not been generated"})
 
-    elif preview_req not in ('1','2','3','4'):
+    elif preview_req not in ('1', '2', '3', '4'):
         return jsonify({"status": "failed", "message": "worng preview number posted"})
 
     path_data = []
@@ -273,8 +273,8 @@ def preview_click_coordinates():
             sx.append(float(Pos[3*i]))
             sy.append(float(Pos[3*i + 1]))
         for i in (1,2,4,5):
-                gx.append(goalPos[i][0])
-                gy.append(goalPos[i][1])
+                gx.append(float(goalPos[i][0]))
+                gy.append(float(goalPos[i][1]))
 
         paths, start = AS.get_best_path(AstarPlanner,sx,sy,gx,gy)
         for i in range(NumOfChair):
@@ -282,7 +282,7 @@ def preview_click_coordinates():
             tmp_dict['id'] = str(start[i])
             tmp_dict['x'] = goalPos[i][1]
             tmp_dict['y'] = goalPos[i][0]
-            tmp_dict['heading'] = goalPos[i][2]
+            tmp_dict['heading'] = AS.radian2degree(float(goalPos[i][2]))
             path_data.append(tmp_dict)
     
     else :
@@ -291,7 +291,7 @@ def preview_click_coordinates():
             tmp_dict['id'] = str(start[i])
             tmp_dict['x'] = sidePos[i][1]
             tmp_dict['y'] = sidePos[i][0]
-            tmp_dict['heading'] = sidePos[i][2]
+            tmp_dict['heading'] = AS.radian2degree(float(sidePos[i][2]))
             path_data.append(tmp_dict)
         
     return jsonify(path_data)
@@ -302,7 +302,7 @@ def socket_Pos():
     global Pos, NumOfChair, Order, isWorking
     status_pos = []
     for i in range(NumOfChair):
-        status_pos.append({'id': i+1,'x':Pos[3*i+1],'y':Pos[3*i],'heading':Pos[3*i + 2]})
+        status_pos.append({'id': i+1,'x':Pos[3*i+1],'y':Pos[3*i],'heading':AS.radian2degree(float(Pos[3*i + 2]))})
 
     return jsonify(status_pos)
 
@@ -310,8 +310,6 @@ def socket_Pos():
 @app.route("/socket_order/",methods=['GET'])
 def socket_Order():
     global status
-    
-    # return jsonify({'status':"7"})
     return jsonify({'status':status[0]})
 
 @app.route('/map-image/')
@@ -334,4 +332,4 @@ if __name__ == '__main__':
     thread.start()
     if SystemIsOn :
         app.run('0.0.0.0',port=5000,debug=False)
-#최신본
+#최신본1
