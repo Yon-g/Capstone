@@ -179,7 +179,10 @@ def changingGlobal():
     while(True):
         for i in range(len(Pos)):
             Pos[i] = random.randint(1,99)
+        for i in range(NumOfChair):
+            Pos[i+2] = random.randint(0,3)
         time.sleep(0.1)
+    
 
 @app.route("/")
 def home():
