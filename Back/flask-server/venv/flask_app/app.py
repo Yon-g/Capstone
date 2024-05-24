@@ -8,7 +8,7 @@ import threading, os, time, random
 import astar as AS
 
 Address = {'IP_webserver' : '192.168.0.130',
-           'IP_ROS' : '192.168.0.146',
+           'IP_ROS' : '192.168.0.156',
            'PORT_socket1' : 8000,
            'PORT_socket2' : 8001}
 
@@ -53,43 +53,61 @@ def websocket_communicate():
     #맵 파일 수신 ==>>> 수정필요 / 100x100 배열로 수정
     imgSize = client_sock.recv(1024)
     R,C = map(int,imgSize.decode('utf-8').split())
+    print(imgSize.decode('utf-8'))
     print(R, C)
     client_sock.send('Img Size recieved'.encode('utf-8'))
 
     #사전에 전달받은 이미지 파일 크기만큼의 메시지(바이트) 수신
     Map_arr = []
-    map_msg = client_sock.recv(R * C + 2)
-    map_msg = map_msg.decode('utf-8')[2:]
+    map_msg = client_sock.recv(R*C)
+    print(map_msg.decode('utf-8'))
+    map_msg = map_msg.decode('utf-8')
+    print(len(map_msg))
     t_pos = 0
     Map_arr = []
     for _ in range(R):
         line = map_msg[t_pos:t_pos+C]
         t_pos += C
-        Map_arr.append(list(line))
+        Map_arr.append(line)
     
-    map_saved = totalProcess(Map_arr,'static/map.png')
-    AstarPlanner = generate_PathPlanner(map_saved)
+    print(Map_arr)
+    os.chdir(os.path.dirname(os.path.realpath(__file__)))
+    map_saved = totalProcess(Map_arr,'static/map_image.png')
+    # AstarPlanner = generate_PathPlanner(Map_arr)
     
     client_sock.send('Map Image received'.encode('utf-8'))
     SystemIsOn = True
 
     #도착점 좌표 6개 수령 메시지필요
     goal = [20.0, 50.0, 0.0, 40.0, 20.0, 0.0, 60.0, 20.0, 0.0, 40.0, 80.0, 0.0, 60.0, 80.0, 0.0, 80,0, 50.0, 0.0]
+    goalMsg = client_sock.recv(1024)
+    goal = list(goalMsg.decode('utf-8').split())
+    print(goal)
     for i in range(len(goalPos)):
         tmp = []
         tmp.append(goal[i*3])
         tmp.append(goal[i*3 + 1])
         tmp.append(goal[i*3 + 2])
         goalPos[i] = tmp
-    
+
+    client_sock.send('Goals Pos received'.encode('utf-8'))
+
     #코너 4개 위치 수령 메시지 필요
     side = [10.0,10.0,0.0,10.0,70.0,0.0,70.0,10.0,0.0,70.0,70.0,0.0]
+    sideMsg = client_sock.recv(1024)
+    side = list(sideMsg.decode('utf-8').split())
+    print(side)
     for i in range(len(sidePos)):
         tmp = []
         tmp.append(side[i*3])
         tmp.append(side[i*3 + 1])
         tmp.append(side[i*3 + 2])
         sidePos[i] = tmp
+    
+    print(goalPos)
+    print(sidePos)
+
+    client_sock.send('Goals Pos received'.encode('utf-8'))
 
     #터틀봇 좌표 수신 및 명령 전달
     while True:
@@ -339,8 +357,8 @@ def serve_map_image():
 #MAIN
 if __name__ == '__main__':
     # thread = threading.Thread(target=serverClient_getImage)
-    # thread = threading.Thread(target=websocket_communicate)
-    thread = threading.Thread(target=changingGlobal)
+    thread = threading.Thread(target=websocket_communicate)
+    # thread = threading.Thread(target=changingGlobal)
     thread.start()
     if SystemIsOn :
         app.run('0.0.0.0',port=5000,debug=False)

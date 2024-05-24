@@ -16,7 +16,7 @@ const MapComponet = ({ turtlebots, previewTurtlebotsPos, preview }) => {
         style={{ position: "relative", width: "100%", height: "100%" }}
       ></img>
       {/* turtlebots 배열을 순회하며 Marker 컴포넌트를 렌더링 */}
-      {testturtlebot.map((turtlebot, i) => {
+      {turtlebots.map((turtlebot, i) => {
         const markerColor = color[i % color.length];
         return (
           <Marker

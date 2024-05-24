@@ -13,7 +13,7 @@ def chgDTypeInt(arr):
 
 #배열 매끄럽게 변환
 def smooth_walls(array):
-    wall_array = np.array(wall_array)
+    wall_array = np.array(array)
     # 이진 팽창
     dilated = binary_dilation(wall_array, structure=np.ones((7,7)))
     # 이진 침식
