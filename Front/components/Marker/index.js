@@ -3,7 +3,7 @@ import { StyledMarker, StyledPresetMarker } from "./style";
 import { MessageOutlined, ShopOutlined, SettingOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 
 /* Marker 스타일링 */
-export const Marker = ({ lat, lng, color }) => {
+export const Marker = ({ lat, lng, color, heading }) => {
   // const [position, setPosition] = useState({ x: 0, y: 0 });
   // const [markerColor, setMarkerColor] = useState("");
 
@@ -24,7 +24,7 @@ export const Marker = ({ lat, lng, color }) => {
     orange: "#FFB74D "
   };
 
-  return (<StyledMarker style={{ left: `${lat}px`, top: `${lng}px`, color: colors[color] }} />);
+  return (<StyledMarker style={{ left: `${lat}px`, top: `${lng}px`, color: colors[color], transform: `rotate(${heading}deg)` }} />);
 };
 
 /* PresetMarker 스타일링 */
