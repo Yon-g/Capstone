@@ -23,12 +23,21 @@ def communication_with_server(self):
         f = open("fileName",'r')
         lines = f.readlines()
         
-        mapsize += 
+        mapSize = str(len(lines))
+        mapSize += " "
+        mapSize += str(len(lines[0]))
+
+        map_arr = ""
         for line in lines:
             if len(line) > 0 :
-                arr.append(list(map(int,line.strip())))
-        
+                map_arr += line.strip()
 
+        connectionSock.send(mapSize.encode('utf-8'))
+        afterSendSize = connectionSock.recv(1024).decode('utf-8')
+
+        connectionSock.send(map_arr.encode('utf-8'))
+        afterSendMap = connectionSock.recv(1024).decode('utf-8')      
+        
         #도착좌표 전송과정
         goal = [[20.0, 50.0, 0.0], #이렇게 배열 있다고 치고
                 [40.0, 20.0, 0.0],

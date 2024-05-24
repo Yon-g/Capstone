@@ -181,9 +181,6 @@ def changingGlobal():
             Pos[i] = random.randint(1,99)
         for i in range(NumOfChair):
             Pos[i+2] = random.randint(0,3)
-            #111111
-            #11111
-            #11111
         time.sleep(0.1)
     
 
