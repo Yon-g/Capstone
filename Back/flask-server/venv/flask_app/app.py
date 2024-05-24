@@ -30,7 +30,7 @@ status = ["0"]
 isWorking = [False]
 
 def generate_PathPlanner(map_arr):
-    newPlanner = AS.AstarPlanner()
+    newPlanner = AS.generateNewPlanner(map_arr)
     return newPlanner
 
 def websocket_communicate():
@@ -73,7 +73,7 @@ def websocket_communicate():
     print(Map_arr)
     os.chdir(os.path.dirname(os.path.realpath(__file__)))
     map_saved = totalProcess(Map_arr,'static/map_image.png')
-    # AstarPlanner = generate_PathPlanner(Map_arr)
+    AstarPlanner = generate_PathPlanner(Map_arr)
     
     client_sock.send('Map Image received'.encode('utf-8'))
     SystemIsOn = True
@@ -85,9 +85,9 @@ def websocket_communicate():
     print(goal)
     for i in range(len(goalPos)):
         tmp = []
-        tmp.append(goal[i*3])
-        tmp.append(goal[i*3 + 1])
-        tmp.append(goal[i*3 + 2])
+        tmp.append(float(goal[i*3]))
+        tmp.append(float(goal[i*3 + 1]))
+        tmp.append(float(goal[i*3 + 2]))
         goalPos[i] = tmp
 
     client_sock.send('Goals Pos received'.encode('utf-8'))
@@ -99,9 +99,9 @@ def websocket_communicate():
     print(side)
     for i in range(len(sidePos)):
         tmp = []
-        tmp.append(side[i*3])
-        tmp.append(side[i*3 + 1])
-        tmp.append(side[i*3 + 2])
+        tmp.append(float(side[i*3]))
+        tmp.append(float(side[i*3 + 1]))
+        tmp.append(float(side[i*3 + 2]))
         sidePos[i] = tmp
     
     print(goalPos)
@@ -178,8 +178,12 @@ def websocket_communicate():
 
                     paths, start = AS.get_best_path(AstarPlanner,sx,sy,gx,gy)
                     botNum = start
+                    print("**************************")
+                    print(start, botNum)
+                    print("**************************")
 
                 else : #이경우에는 사이드 좌표로 써야함
+                    botNum = [0,1,2,3]
                     goalNum = [0,1,2,3]
 
                 for i in range(NumOfChair):
@@ -190,7 +194,9 @@ def websocket_communicate():
 
         #자체적으로 인터벌 유지
         time.sleep(0.15)
+        print(msg2ROS)
         client_sock.send(msg2ROS.encode('utf-8'))
+
         
 def changingGlobal():
     global Pos, NumOfChair
@@ -339,7 +345,7 @@ def socket_Pos():
 @app.route("/socket_order/",methods=['GET'])
 def socket_Order():
     global status
-    # return jsonify({'status': 7})
+    return jsonify({'status': 7})
     return jsonify({'status':status[0]})
 
 @app.route('/map-image/')
@@ -357,8 +363,8 @@ def serve_map_image():
 #MAIN
 if __name__ == '__main__':
     # thread = threading.Thread(target=serverClient_getImage)
-    thread = threading.Thread(target=websocket_communicate)
-    # thread = threading.Thread(target=changingGlobal)
+    # thread = threading.Thread(target=websocket_communicate)
+    thread = threading.Thread(target=changingGlobal)
     thread.start()
     if SystemIsOn :
         app.run('0.0.0.0',port=5000,debug=False)
