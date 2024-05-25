@@ -21,7 +21,7 @@ export default function LayoutComponet() {
   useEffect(() => {
     const fetchTurtlebotOrder = async () => {
       try {
-        const response = await fetch("http://192.168.0.130:5000/socket_order");
+        const response = await fetch("http://192.168.0.159:5000/socket_order");
         const data = await response.json();
         const newOrder = data.status;
         console.log("서버에서 받는 데이터:", newOrder);
@@ -65,7 +65,7 @@ export default function LayoutComponet() {
     // Turtlebot의 위치 정보를 비동기적으로 가져오는 함수
     const fetchTurtlebotPositions = async () => {
       try {
-        const response = await fetch("http://192.168.0.130:5000/socket_Pos");
+        const response = await fetch("http://192.168.0.159:5000/socket_Pos");
         const data = await response.json();
         const updatedTurtlebots = data.map(turtlebot => {
           return {
