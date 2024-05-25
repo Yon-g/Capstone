@@ -13,14 +13,24 @@ def loadAsIntArr(fileName):
             arr.append(list(map(int,line.strip())))
     return arr
 
+def stringArr2IntArr(arr):
+    intArr = []
+    for line in arr:
+        row = []
+        for el in line:
+            row.append(int(el))
+        intArr.append(row)
+    return intArr
+
 def Arr2oxoy(arr):
+    intArr = stringArr2IntArr(arr)
     dic = {}
     dic['x'] = []; dic['y'] = []
-    for i in range(len(arr)):
-        for j in range(len(arr[0])):
-            if arr[i][j] == 1:
+    for i in range(len(intArr)):
+        for j in range(len(intArr[0])):
+            if intArr[i][j] == 1:
                 dic['x'].append(j)
-                dic['y'].append(len(arr) - i - 1)
+                dic['y'].append(len(intArr) - i - 1)
     return dic
 
 def load_GetOxOy(fileName="map.txt"):
