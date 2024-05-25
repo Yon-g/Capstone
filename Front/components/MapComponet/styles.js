@@ -18,13 +18,13 @@ export const StyledMapContainer = styled.div`
 // 테이블 디자인
 export const StyledTable = styled.div`
    width: 164px;
-   height: 246px;
+   height: 270.6px;
    position: absolute;
   //  overflow: hidden;
    background-color: #ccc;
    border: 2px black solid;
-   top: 35%;
-   left: 40%;
+   top: 278.8px;
+   left: 328px;
    z-index:100;
    border-radius: 10px;
    opacity: 0.6;

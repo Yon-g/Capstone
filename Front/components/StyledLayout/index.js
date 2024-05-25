@@ -36,7 +36,6 @@ export default function LayoutComponet() {
             setMessageOrder(true);
             setTimeout(() => setMessageOrder(false), 3000);
           } else if (newOrder == 7) {
-            console.log("hhhhhhhhhhhhhhhhhhh");
             setMessage("자율주행의자가 이동을 시작합니다.");
             setMessageState(7);
             setMessageOrder(true);
