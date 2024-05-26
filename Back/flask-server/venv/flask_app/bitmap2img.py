@@ -1,6 +1,7 @@
 import os
 import numpy as np
 import matplotlib.pyplot as plt
+import copy
 from scipy.ndimage import binary_dilation, binary_erosion, binary_fill_holes
 
 def loadAsIntArr(fileName):
@@ -23,7 +24,14 @@ def stringArr2IntArr(arr):
     return intArr
 
 def Arr2oxoy(arr):
-    intArr = stringArr2IntArr(arr)
+    iArr = stringArr2IntArr(arr)
+    intArr = copy.deepcopy(iArr)
+    for i in range(34,67):
+        intArr[i][40] = 1
+        intArr[i][60] = 1
+    for j in range(40,60):
+        intArr[34][j] = 1
+        intArr[67][j] = 1
     dic = {}
     dic['x'] = []; dic['y'] = []
     for i in range(len(intArr)):

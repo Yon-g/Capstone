@@ -204,7 +204,7 @@ def changingGlobal():
         for i in range(len(Pos)):
             Pos[i] = random.randint(1,99)
         for i in range(NumOfChair):
-            Pos[i+2] = random.randint(0,3)
+            Pos[3*i+2] = random.randint(0,3)
         time.sleep(0.1)
 
 @app.route("/")
@@ -302,31 +302,24 @@ def preview_click_coordinates():
             tmp_dict['y'] = sidePos[i][0]
             tmp_dict['heading'] = AS.radian2degree(float(sidePos[i][2]))
             path_data.append(tmp_dict)
-
-        # gx = []; gy = []; sx = []; sy = []
-        # for i in range(NumOfChair):
-        #     sx.append(float(Pos[3*i]))
-        #     sy.append(float(Pos[3*i + 1]))
-        # for i in (1,2,4,5):
-        #         gx.append(float(goalPos[i][0]))
-        #         gy.append(float(goalPos[i][1]))
-
-        # paths, start = AS.get_best_path(AstarPlanner,sx,sy,gx,gy)
-        # for i in range(NumOfChair):
-        #     tmp_dict = {}
-        #     tmp_dict['id'] = str(start[i])
-        #     tmp_dict['x'] = goalPos[i][1]
-        #     tmp_dict['y'] = goalPos[i][0]
-        #     tmp_dict['heading'] = AS.radian2degree(float(goalPos[i][2]))
-        #     path_data.append(tmp_dict)
     
     else :
+        gx = []; gy = []; sx = []; sy = []
+        for i in range(NumOfChair):
+            sx.append(float(Pos[3*i]))
+            sy.append(float(Pos[3*i + 1]))
+        for i in (1,2,4,5):
+                gx.append(float(goalPos[i][0]))
+                gy.append(float(goalPos[i][1]))
+
+        paths, start = AS.get_best_path(AstarPlanner,sx,sy,gx,gy)
+
         for i in range(NumOfChair):
             tmp_dict = {}
-            tmp_dict['id'] = str(i + 1)
-            tmp_dict['x'] = sidePos[i][1]
-            tmp_dict['y'] = sidePos[i][0]
-            tmp_dict['heading'] = AS.radian2degree(float(sidePos[i][2]))
+            tmp_dict['id'] = str(start[i] + 1)
+            tmp_dict['x'] = goalPos[i][1]
+            tmp_dict['y'] = goalPos[i][0]
+            tmp_dict['heading'] = AS.radian2degree(float(goalPos[i][2]))
             path_data.append(tmp_dict)
         
     return jsonify(path_data)
@@ -345,8 +338,8 @@ def socket_Pos():
 @app.route("/socket_order/",methods=['GET'])
 def socket_Order():
     global status
-    return jsonify({'status': 8})
-    # return jsonify({'status':status[0]})
+    # return jsonify({'status': 7})
+    return jsonify({'status':status[0]})
 
 @app.route('/map-image/')
 def serve_map_image():
@@ -363,8 +356,8 @@ def serve_map_image():
 #MAIN
 if __name__ == '__main__':
     # thread = threading.Thread(target=serverClient_getImage)
-    # thread = threading.Thread(target=websocket_communicate)
-    thread = threading.Thread(target=changingGlobal)
+    thread = threading.Thread(target=websocket_communicate)
+    # thread = threading.Thread(target=changingGlobal)
     thread.start()
     if SystemIsOn :
         app.run('0.0.0.0',port=5000,debug=False)

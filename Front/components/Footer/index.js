@@ -32,7 +32,7 @@ export default function FooterComponents({ order, setPreview, setPreviewTurtlebo
     const order = selectedPreset + 1;
     try {
       // 여기에 서버로 데이터를 전송하는 코드를 작성
-      const response = await fetch("http://192.168.0.159:5000/user_order", {
+      const response = await fetch("http://192.168.0.130:5000/user_order", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -59,7 +59,7 @@ export default function FooterComponents({ order, setPreview, setPreviewTurtlebo
       const stopSignal = JSON.stringify({ option: 5 }); //취소신호를 5로 함 
       console.log("서버로 보내는 데이터:", stopSignal); // 콘솔에 서버로 보낼 데이터 출력 확인용
 
-      const response = await fetch("http://192.168.0.159:5000/user_order", { //이 주소가 맞는지 확인 필요할 듯
+      const response = await fetch("http://192.168.0.130:5000/user_order", { //이 주소가 맞는지 확인 필요할 듯
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -84,7 +84,7 @@ export default function FooterComponents({ order, setPreview, setPreviewTurtlebo
     // 재민이랑 얘기해보고 미리보기 통신해야함
     try {
       // 서버에 presetId 값을 전송하여 위치 정보를 요청
-      const response = await fetch("http://192.168.0.159:5000/preview_post/", {
+      const response = await fetch("http://192.168.0.130:5000/preview_post/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -133,7 +133,7 @@ export default function FooterComponents({ order, setPreview, setPreviewTurtlebo
             <div style={{ flexGrow: 1, marginLeft: '15px' }}>Preset</div>
             <div style={{ color: 'red', marginTop: '-8px', marginRight: '-8px', width: '20px' }} onClick={closeModal}>x</div>
           </StyledPresetHead>
-          {["1. 은재민", "2. 송승헌", "3. 김용원", "4. 김요셉"].map((presetContent, presetId) => (
+          {["1. 프리셋1", "2. 프리셋2", "3. 프리셋3", "4. 프리셋4"].map((presetContent, presetId) => (
             <StyledPreset
               key={presetId}
               onClick={() => { selectPreset(presetId); setPreview(false); }}

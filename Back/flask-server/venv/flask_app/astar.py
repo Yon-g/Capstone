@@ -8,7 +8,7 @@ See Wikipedia article (https://en.wikipedia.org/wiki/A*_search_algorithm)
 """
 
 import math
-import random
+import copy
 import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
@@ -19,7 +19,7 @@ from itertools import permutations
 show_animation = False
 
 grid_size = 1.0  # [m]
-robot_radius = 3.0  # [m]
+robot_radius = 5.0  # [m]
 CrashWeight = 5.0
 num_robot = 4
 
