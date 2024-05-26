@@ -25,7 +25,7 @@ def smooth_walls(array):
 
 #이미지 저장 함수(하늘색-흰색)
 def save_img(arr,imgname="map_image.png"):
-    skyB_wht = plt.cm.colors.ListedColormap(['skyblue', 'white'])
+    skyB_wht = plt.cm.colors.ListedColormap(['gray', 'white'])
     plt.imsave(imgname,arr, cmap=skyB_wht)
 
 def totalProcess(arr,fileName):
