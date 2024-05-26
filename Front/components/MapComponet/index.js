@@ -17,7 +17,7 @@ const MapComponet = ({ turtlebots, previewTurtlebotsPos, preview }) => {
       ></img>
       <StyledTable></StyledTable>
       {/* turtlebots 배열을 순회하며 Marker 컴포넌트를 렌더링 */}
-      {turtlebots.map((turtlebot, i) => {
+      {testturtlebot.map((turtlebot, i) => {
         const markerColor = color[i % color.length];
         return (
           <Marker
