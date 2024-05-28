@@ -148,22 +148,22 @@ def websocket_communicate():
             status[0] = '9'
             Order[0] = '0'
        
+        time.sleep(0.7)
+
         # 0번 : 작업 실행 없음, 작업 요청 가능
         # 1번 : 작업 있음
         # 5번 : 정지
         # 6번 : 작동중
-        time.sleep(0.1)
-
         if isWorking[0] == True:
             msg2ROS = '6'
-        
-        elif status[0] in ('5','8'):
-                status[0] = '0'
-                msg2ROS = '0'
+
+        elif status[0] == '5' or status[0] == '8':
+            status[0] = '0'
+            msg2ROS = '0'
 
         if rawData[0] == "0" :
             msg2ROS = Order[0]
-            if status[0] == '6' and Order[0] not in ['0','5']:
+            if status[0] == '6' and Order[0] != '5':
                 msg2ROS = "1"
                 if Order[0] == '2':
                     botNum = [0,1,2,3]
@@ -173,9 +173,10 @@ def websocket_communicate():
                     botNum = [0,1,2,3]
                     goalNum = [0,1,3,4]
 
-                elif Order[0] == '4':
+                elif Order[0] == '1':
                     sx = []; sy = []; gx = []; gy = []
-                    goalNum = [1,2,4,5]
+                    botNum = [0,1,2,3]
+                    goalNum = [0,1,3,4]
 
                     for i in range(NumOfChair):
                         sx.append(float(Pos[3*i]))
@@ -186,29 +187,29 @@ def websocket_communicate():
                         gy.append(goalPos[i][1])
 
                     paths, start = AS.get_best_path(AstarPlanner,sx,sy,gx,gy)
-                    botNum = start
-                    print("**************************")
-                    print(start, botNum)
-                    print("**************************")
+                    res = []
+                    for x in start :
+                        res.append(goalNum[x[1]])
+                    goalNum = res
 
                 else : #이경우에는 사이드 좌표로 써야함
                     botNum = [0,1,2,3]
                     goalNum = [0,1,2,3]
 
                 for i in range(NumOfChair):
-                    for j in range(NumOfChair):
-                        if botNum[j] == i : 
-                            msg2ROS += (" " + str(goalNum[j]))
-                            break
-        
-        if status[0] == '6' and Order[0] == '5':
+                    msg2ROS += (" " + str(goalNum[i]))    
+                
+        if status[0] == '7' and Order[0] == '5':
             msg2ROS = '5'
         
         time.sleep(0.1)
         #자체적으로 인터벌 유지
+        print("!!!!!!!!!!!!!!!!!!!!!!")
         print(msg2ROS)
-        client_sock.send(msg2ROS.encode('utf-8'))
+        print(Order[0], status[0])
+        print("!!!!!!!!!!!!!!!!!!!!!!")
 
+        client_sock.send(msg2ROS.encode('utf-8'))
         
 def changingGlobal():
     global Pos, NumOfChair
@@ -227,7 +228,7 @@ def home():
 #Flask 서버에서 클릭 좌표를 사용하여 POST 요청을 처리할 새 경로 정의
 @app.route('/user_order', methods=['POST'])
 def handle_click_coordinates():
-    global Order, isWorking
+    global Order, isWorking, status
     user_order = str(request.json['option'])
 
     print("Coordinates received:", user_order)
@@ -237,10 +238,11 @@ def handle_click_coordinates():
         #작업 메시지 확인 시
         Order[0] = user_order
         status[0] = '6'
+        print(Order[0], status[0])
         print("*" * 100)
         print(Order[0])
         print("*" * 100)
-        return jsonify({"status": "success", "message": "Coordinates received"}), 200
+        return jsonify({"num" : Order[0],"status": "success", "message": "Coordinates received"}), 200
     
     return jsonify({"status": "fail", "message": "Your previous order is not finished"})
 
@@ -258,7 +260,7 @@ def preview_click_coordinates():
     if AstarPlanner == False:
         return jsonify({"status": "failed", "message": "planner has not been generated"})
 
-    elif preview_req not in ('1','2','3','4') or preview_req not in (1,2,3,4):
+    elif preview_req not in ('1','2','3','4') and preview_req not in (1,2,3,4):
         return jsonify({"status": "failed", "message": "worng preview number posted"})
 
     path_data = []
@@ -296,9 +298,10 @@ def preview_click_coordinates():
             sx.append(float(Pos[3*i]))
             sy.append(float(Pos[3*i+1]))
 
-        for i in (1,2,4,5):
-                gx.append(float(goalPos[i][0]))
-                gy.append(float(goalPos[i][1]))
+        target_goal = [0,1,3,4]
+        for i in [0,1,3,4]:
+            gx.append(goalPos[i][0])
+            gy.append(goalPos[i][1])
 
         paths, start = AS.get_best_path(AstarPlanner,sx,sy,gx,gy)
         
@@ -306,13 +309,15 @@ def preview_click_coordinates():
         for i in range(NumOfChair):
             sett.append(start[i])
         sett.sort()
-        
+        print("*" * 100)
+        print(sett)
+        print("*" * 100)
         for i in range(NumOfChair):
             tmp_dict = {}
             tmp_dict['id'] = sett[i][0] + 1
-            tmp_dict['x'] = goalPos[sett[i][0]][1]
-            tmp_dict['y'] = goalPos[sett[i][0]][0]
-            tmp_dict['heading'] = AS.radian2degree(float(goalPos[sett[i][0]][2]))
+            tmp_dict['x'] = goalPos[target_goal[sett[i][1]]][1]
+            tmp_dict['y'] = goalPos[target_goal[sett[i][1]]][0]
+            tmp_dict['heading'] = AS.radian2degree(float(goalPos[target_goal[sett[i][1]]][2]))
             path_data.append(tmp_dict)
         
     return jsonify(path_data)

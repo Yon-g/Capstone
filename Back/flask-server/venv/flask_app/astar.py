@@ -354,21 +354,21 @@ def get_best_path(a_star,sx,sy,gx,gy):
 
     print(combos[best])
 
-    colors = ["-g","-r","-y","-b"]
-    markers_s = ["og","or","oy","ob"]
-    markers_g = ["og","or","oy","ob"]
+    # colors = ["-r","-b","-g","-y"]
+    # markers_s = ["or","ob","og","oy"]
+    # markers_g = ["or","ob","og","oy"]
 
-    if True:  # pragma: no cover
-        for i in range(num_robot):
-            plt.plot(sx[combos[best][i][0]], sy[combos[best][i][0]], markers_s[combos[best][i][0]])
-            plt.plot(gx[combos[best][i][1]], gy[combos[best][i][1]], markers_g[combos[best][i][1]])
-            plt.grid(True)
-            plt.axis("equal")
-    if True:  # pragma: no cover
-        for i in range(num_robot):
-            plt.plot(paths[best][i][0], paths[best][i][1], colors[i])
-            plt.pause(0.0005)
-        plt.show()
+    # if True:  # pragma: no cover
+    #     for i in range(num_robot):
+    #         plt.plot(sx[combos[best][i][0]], sy[combos[best][i][0]], markers_s[combos[best][i][0]])
+    #         plt.plot(gx[combos[best][i][1]], gy[combos[best][i][1]], markers_g[combos[best][i][1]])
+    #         plt.grid(True)
+    #         plt.axis("equal")
+    # if True:  # pragma: no cover
+    #     for i in range(num_robot):
+    #         plt.plot(paths[best][i][0], paths[best][i][1], colors[i])
+    #         plt.pause(0.0005)
+    #     plt.show()
 
     return paths[best][0:4], combos[best]
 
@@ -389,11 +389,11 @@ def run():
     # set obstacle positions
     ox, oy = [], []
 
-    sx = [25,40,55,70]
-    sy = [25,25,25,25]
+    sx = [14,86,81,16]
+    sy = [21,21,81,76]
 
-    gx = [25,40,55,70]
-    gy = [70,70,70,70]
+    gx = [44,57,57,44]
+    gy = [67,67,32,32]
 
     colors = [".g",".r",".y",".b"]
     markers_s = ["og","or","oy","ob"]
