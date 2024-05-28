@@ -152,11 +152,18 @@ def websocket_communicate():
         # 1번 : 작업 있음
         # 5번 : 정지
         # 6번 : 작동중
+        time.sleep(0.1)
+
         if isWorking[0] == True:
-            msg2ROS = "6" #1
-        elif rawData[0] == "0" :
+            msg2ROS = '6'
+        
+        elif status[0] in ('5','8'):
+                status[0] = '0'
+                msg2ROS = '0'
+
+        if rawData[0] == "0" :
             msg2ROS = Order[0]
-            if status[0] == '6':
+            if status[0] == '6' and Order[0] not in ['0','5']:
                 msg2ROS = "1"
                 if Order[0] == '2':
                     botNum = [0,1,2,3]
@@ -193,8 +200,12 @@ def websocket_communicate():
                         if botNum[j] == i : 
                             msg2ROS += (" " + str(goalNum[j]))
                             break
+        
+        if status[0] == '6' and Order[0] == '5':
+            msg2ROS = '5'
+        
+        time.sleep(0.1)
         #자체적으로 인터벌 유지
-        time.sleep(0.15)
         print(msg2ROS)
         client_sock.send(msg2ROS.encode('utf-8'))
 

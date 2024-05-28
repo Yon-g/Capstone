@@ -84,7 +84,7 @@ export default function FooterComponents({ order, setPreview, setPreviewTurtlebo
     // 재민이랑 얘기해보고 미리보기 통신해야함
     try {
       // 서버에 presetId 값을 전송하여 위치 정보를 요청
-      const response = await fetch("http://192.168.0.158:5000/preview_post/", {
+      const response = await fetch("http://192.168.0.130:5000/preview_post/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
