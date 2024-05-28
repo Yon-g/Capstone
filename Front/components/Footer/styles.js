@@ -71,11 +71,51 @@ export const StyledStopButton = styled(Button)`
     outline: none; // 포커스 테두리 제거
   }
 
+  &:hover {
+    background-color: #ff6347;
+    border-color: #ff6347;
+    outline: none; // 포커스 테두리 제거
+  }
+
+  &:disabled {
+    background-color: #ff6347;
+    border-color: #ff6347;
+    outline: none; // 포커스 테두리 제거
+  }
+
   @media (min-width: 820px) and (max-width: 1179px) {
     width : 150px;
     height: 60%;
     font-size: 180%;
     margin-bottom:5px;
+    background-color: #ff6347; 
+    border-color: #ff6347; 
+    font-weight: bold; 
+
+     // 클릭 상태에서 배경색과 테두리 색상 유지
+    &:active {
+      background-color: #ff6347;
+      border-color: #ff6347;
+    }
+
+    // 포커스 상태에서 배경색과 테두리 색상 유지
+    &:focus {
+      background-color: #ff6347;
+      border-color: #ff6347;
+      outline: none; // 포커스 테두리 제거
+    }
+
+    &:hover {
+      background-color: #ff6347;
+      border-color: #ff6347;
+      outline: none; // 포커스 테두리 제거
+    }
+
+    &:disabled {
+      background-color: #ff6347;
+      border-color: #ff6347;
+      outline: none; // 포커스 테두리 제거
+    }
   }
 `;
 
@@ -164,6 +204,7 @@ export const StyledPreviewIcon = styled(SearchOutlined)`
   // height: 15px;
   background-color: #66BB6A;
   border-color: #66BB6A;
+  
   // 클릭 상태에서 배경색과 테두리 색상 유지
   &:active {
     background-color: #66BB6A;
@@ -178,4 +219,5 @@ export const StyledPreviewIcon = styled(SearchOutlined)`
   }
   @media (min-width: 820px) and (max-width: 1179px) {
     font-size: 170%;
+  } 
 `;

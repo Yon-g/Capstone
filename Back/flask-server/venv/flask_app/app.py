@@ -320,7 +320,7 @@ def socket_Pos():
 @app.route("/socket_order/",methods=['GET'])
 def socket_Order():
     global status
-    # return jsonify({'status': 8})
+    # return jsonify({'status': 7})
     return jsonify({'status':status[0]})
 
 @app.route('/map-image/')
@@ -329,8 +329,9 @@ def serve_map_image():
 
 #MAIN
 if __name__ == '__main__':
-    # thread = threading.Thread(target=websocket_communicate)
-    thread = threading.Thread(target=changingGlobal)
+    # thread = threading.Thread(target=serverClient_getImage)
+    thread = threading.Thread(target=websocket_communicate)
+    # thread = threading.Thread(target=changingGlobal)
     thread.start()
     if SystemIsOn :
         app.run('0.0.0.0',port=5000,debug=False)
