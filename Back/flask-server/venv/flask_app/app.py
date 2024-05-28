@@ -6,6 +6,7 @@ from mapProcess import totalProcess
 from socket import *
 import threading, os, time, random
 import astar as AS
+import bitmap2img
 
 Address = {'IP_webserver' : '192.168.0.130',
            'IP_ROS' : '192.168.0.156',
@@ -14,7 +15,7 @@ Address = {'IP_webserver' : '192.168.0.130',
 
 NumOfChair = 4
 SystemIsOn = True
-AstarPlanner = True
+AstarPlanner = False
 
 app = Flask(__name__)
 
@@ -24,12 +25,13 @@ cors = CORS(app, resources={r"/*/": {"origins": "*"}})
 map_saved = []
 Pos = [0.00] * (3 * NumOfChair) # {X, Y, Heading}
 sidePos = [[50.00 for _ in range(3)] for _ in range(NumOfChair)]
-goalPos = [[70.00 for _ in range(3)] for _ in range(6)]
+goalPos = [[20.00, 40.00, 0.00 ] for _ in range(6)]
 Order = ["0"] 
 status = ["0"]
 isWorking = [False]
 
 def generate_PathPlanner(map_arr):
+    map_arr = bitmap2img.stringArr2IntArr(map_arr)
     newPlanner = AS.generateNewPlanner(map_arr)
     return newPlanner
 
@@ -70,7 +72,7 @@ def websocket_communicate():
         t_pos += C
         Map_arr.append(line)
     
-    print(Map_arr)
+    # print(Map_arr)
     os.chdir(os.path.dirname(os.path.realpath(__file__)))
     map_saved = totalProcess(Map_arr,'static/map_image.png')
     AstarPlanner = generate_PathPlanner(Map_arr)
@@ -191,7 +193,6 @@ def websocket_communicate():
                         if botNum[j] == i : 
                             msg2ROS += (" " + str(goalNum[j]))
                             break
-
         #자체적으로 인터벌 유지
         time.sleep(0.15)
         print(msg2ROS)
@@ -201,8 +202,9 @@ def websocket_communicate():
 def changingGlobal():
     global Pos, NumOfChair
     while(True):
-        for i in range(len(Pos)):
-            Pos[i] = random.randint(1,99)
+        for i in range(0,len(Pos),3):
+            Pos[i] = random.randint(10,35)
+            Pos[i+1] = random.randint(63,75)
         for i in range(NumOfChair):
             Pos[3*i+2] = random.randint(0,3)
         time.sleep(0.1)
@@ -216,10 +218,6 @@ def home():
 def handle_click_coordinates():
     global Order, isWorking
     user_order = str(request.json['option'])
-
-    # react에서 post요청 직후에 modal, Order 버튼을 불가능하게 만들어야 함 + 작업수행중 글씨로 바꾸면 좋을듯? 
-    # (ex. 직전 명령이 아직 수행중입니다. 오랜시간 대기상태가 지속될 경우, 의자의 상태와 장애물 존재 여부를 확인하세요)
-    # + 동작 종료버튼을 만들자 => 터틀봇 전체 움직임 정지 
 
     print("Coordinates received:", user_order)
     print(isWorking[0], user_order)
@@ -249,35 +247,12 @@ def preview_click_coordinates():
     if AstarPlanner == False:
         return jsonify({"status": "failed", "message": "planner has not been generated"})
 
-    elif preview_req not in ('1','2','3','4'):
+    elif preview_req not in ('1','2','3','4') or preview_req not in (1,2,3,4):
         return jsonify({"status": "failed", "message": "worng preview number posted"})
 
     path_data = []
 
     if preview_req == '2' or preview_req == '3':
-        # if preview_req == '0':
-        #     for i in (1,2,4,5):
-        #         gx.append(goalPos['x'][i])
-        #         gy.append(goalPos['y'][i])
-        # elif preview_req == '1' :
-        #     for i in (0,1,3,4):
-        #         gx.append(goalPos['x'][i])
-        #         gy.append(goalPos['y'][i])
-        
-        # paths = AS.get_fixed_path(AstarPlanner,sx,sy,gx,gy)
-
-        # for i in range(len(paths)):
-        #     tmp = paths[i]
-        #     tmp_dict = {}
-        #     tmp_dict['id'] = str(i)
-        #     for j in range(len(tmp)):
-        #         if j % 2 == 0 :
-        #             tmp_dict["y"+str(j//2 + 1)]
-        #         else :
-        #             tmp_dict["x"+str(j//2 + 1)]
-        #     path_data.append(tmp_dict)
-        # preview = path_data
-
         #사이드로 보내기
         if preview_req == '2' :
             goalSet = [1,2,4,5]
@@ -305,21 +280,28 @@ def preview_click_coordinates():
     
     else :
         gx = []; gy = []; sx = []; sy = []
+
         for i in range(NumOfChair):
             sx.append(float(Pos[3*i]))
-            sy.append(float(Pos[3*i + 1]))
+            sy.append(float(Pos[3*i+1]))
+
         for i in (1,2,4,5):
                 gx.append(float(goalPos[i][0]))
                 gy.append(float(goalPos[i][1]))
 
         paths, start = AS.get_best_path(AstarPlanner,sx,sy,gx,gy)
-
+        
+        sett = []
+        for i in range(NumOfChair):
+            sett.append(start[i])
+        sett.sort()
+        
         for i in range(NumOfChair):
             tmp_dict = {}
-            tmp_dict['id'] = str(start[i] + 1)
-            tmp_dict['x'] = goalPos[i][1]
-            tmp_dict['y'] = goalPos[i][0]
-            tmp_dict['heading'] = AS.radian2degree(float(goalPos[i][2]))
+            tmp_dict['id'] = sett[i][0] + 1
+            tmp_dict['x'] = goalPos[sett[i][0]][1]
+            tmp_dict['y'] = goalPos[sett[i][0]][0]
+            tmp_dict['heading'] = AS.radian2degree(float(goalPos[sett[i][0]][2]))
             path_data.append(tmp_dict)
         
     return jsonify(path_data)
@@ -338,27 +320,18 @@ def socket_Pos():
 @app.route("/socket_order/",methods=['GET'])
 def socket_Order():
     global status
-    # return jsonify({'status': 7})
+    # return jsonify({'status': 8})
     return jsonify({'status':status[0]})
 
 @app.route('/map-image/')
 def serve_map_image():
     return send_from_directory('static','map_image.png')
 
-# @app.route('/route-data/',methods=['GET'])
-# # id, x1, y1, x2, y2, x3, y3,... 4개
-# def serve_route_data():
-#     global preview
-#     if len(preview) < 4:
-#         return jsonify({"status": "success", "message": "preview info updated"})
-#     return jsonify(preview)
-
 #MAIN
 if __name__ == '__main__':
-    # thread = threading.Thread(target=serverClient_getImage)
-    thread = threading.Thread(target=websocket_communicate)
-    # thread = threading.Thread(target=changingGlobal)
+    # thread = threading.Thread(target=websocket_communicate)
+    thread = threading.Thread(target=changingGlobal)
     thread.start()
     if SystemIsOn :
         app.run('0.0.0.0',port=5000,debug=False)
-#최신본1
+#최신본2

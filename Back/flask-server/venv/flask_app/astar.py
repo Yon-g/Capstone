@@ -14,12 +14,13 @@ import numpy as np
 from PIL import Image
 import os, csv
 from bitmap2img import load_GetOxOy, loadAsIntArr, Arr2oxoy
+from mapProcess import smooth_walls
 from itertools import permutations
 
 show_animation = False
 
 grid_size = 1.0  # [m]
-robot_radius = 5.0  # [m]
+robot_radius = 3.0  # [m]
 CrashWeight = 5.0
 num_robot = 4
 
@@ -77,7 +78,6 @@ class AStarPlanner:
             rx: x position list of the final path
             ry: y position list of the final path
         """
-        print(sx,sy,gx,gy)
 
         start_node = self.Node(self.calc_xy_index(sx, self.min_x),
                                self.calc_xy_index(sy, self.min_y), 0.0, -1)
@@ -283,11 +283,10 @@ def SLAM_TO_Array(source = "relative path of map image file"):
     return mapInt
 
 def generateNewPlanner(arr):
-    global grid_size, robot_radius, CrashWeight, num_robot
-    
-    ox = []; oy = []
+    global grid_size, robot_radius, num_robot
 
     obstacle = Arr2oxoy(arr)
+
     ox = obstacle['x']
     oy = obstacle['y']
 
@@ -297,12 +296,16 @@ def get_best_path(a_star,sx,sy,gx,gy):
     global grid_size, robot_radius, CrashWeight, num_robot
 
     paths = []
+    combos = []
     pmts = list(permutations([0,1,2,3],4))
 
-    for p in pmts:
+    for p in range(len(pmts)):
         path = []
+        combo = []
         for i in range(num_robot):
-            path.append(list(a_star.planning(sx[p[i]], sy[p[i]], gx[i], gy[i])))
+            path.append(list(a_star.planning(sx[pmts[p][i]], sy[pmts[p][i]], gx[i], gy[i])))
+            combo.append([pmts[p][i],i])
+        combos.append(combo)
         paths.append(path)
 
     for branch in range(len(paths)):
@@ -342,25 +345,33 @@ def get_best_path(a_star,sx,sy,gx,gy):
             eachPathCrash[crush[0][1]] += 1
 
         for el in eachPathCrash:
-            score += (1.0 + (0.1) * el) * CrashWeight
+            score += (0.5 * el) * CrashWeight
 
         # print(i,"번째",tmpData[0],max(tmpData[1]),eachPathCrash,"점수 :",score)
         if score < best_score :    
             best = i
             best_score = score
-            
-    dataOfBest = paths[best][num_robot]
-    # print(pmts[best])
 
-    selected_path = []
-    for i in range(num_robot):
-        pathOfEachBot = []
-        for n in range(len(paths[best][i][0])):
-            xPos, yPos = paths[best][i][0][n],paths[best][i][1][n]
-            pathOfEachBot.append([xPos,yPos])
-        selected_path.append(reversed(pathOfEachBot))
+    print(combos[best])
 
-    return paths[best][0:4], list(pmts[best])
+    colors = ["-g","-r","-y","-b"]
+    markers_s = ["og","or","oy","ob"]
+    markers_g = ["og","or","oy","ob"]
+
+    if True:  # pragma: no cover
+        for i in range(num_robot):
+            plt.plot(sx[combos[best][i][0]], sy[combos[best][i][0]], markers_s[combos[best][i][0]])
+            plt.plot(gx[combos[best][i][1]], gy[combos[best][i][1]], markers_g[combos[best][i][1]])
+            plt.grid(True)
+            plt.axis("equal")
+    if True:  # pragma: no cover
+        for i in range(num_robot):
+            plt.plot(paths[best][i][0], paths[best][i][1], colors[i])
+            plt.pause(0.0005)
+        plt.show()
+
+    return paths[best][0:4], combos[best]
+
 
 def get_fixed_path(a_star,sx,sy,gx,gy):
     global grid_size, robot_radius, CrashWeight, num_robot
@@ -371,150 +382,44 @@ def get_fixed_path(a_star,sx,sy,gx,gy):
     
     return fixed_paths[0:4]
 
+
 def run():
     print(__file__ + " start!!")
-    sx = []
-    sy = []
-    gx = []
-    gy = []
-
-    grid_size = 3.0  # [m]
-    robot_radius = 5.0  # [m]
-    CrashWeight = 3.0
     num_robot = 4
     # set obstacle positions
     ox, oy = [], []
 
-    obstacle = load_GetOxOy("map2.txt")
-    ox = obstacle['x']
-    oy = obstacle['y']
+    sx = [25,40,55,70]
+    sy = [25,25,25,25]
 
-    mapArr = loadAsIntArr('map2.txt')
+    gx = [25,40,55,70]
+    gy = [70,70,70,70]
 
-    sx = [20,20,80,80]
-    sy = [20,80,20,80]
-    gx = [30,30,50,50]
-    gy = [30,50,30,50]
-
-    markers_s = ["og","or","oy","ob"]
-    markers_g = ["xg","xr","xy","xb"]
-    
-
-    a_star = AStarPlanner(ox, oy, grid_size, robot_radius)
-
-    fixed_paths = []
-    for i in range(num_robot):
-        fixed_paths.append(list(a_star.planning(sx[i], sy[i], gx[i], gy[i])))
-
-    # paths = []
-    # pmts = list(permutations([0,1,2,3],4))
-
-    # for p in pmts:
-    #     path = []
-    #     for i in range(num_robot):
-    #         path.append(list(a_star.planning(sx[i], sy[i], gx[p[i]], gy[p[i]])))
-    #     paths.append(path)
-
-    # print(len(paths))
-    # for branch in range(len(paths)):
-    #     dataOfbranch = []
-    #     lengthOfEach = []
-    #     crushSpot = []
-
-    #     for i in range(num_robot):
-    #         lengthOfEach.append(len(paths[branch][i][0]))
-
-    #     for i in range(num_robot):
-    #         for j in range(i+1,num_robot):
-    #             if len(paths[branch][i][0]) >= len(paths[branch][j][0]):
-    #                 shorter = j
-    #                 longer = i
-    #             else :
-    #                 shorter = i
-    #                 longer = j
-
-    #             for d in range(len(paths[branch][shorter][0])):
-    #                 if not isSafe(paths[branch][i][0][d],paths[branch][i][1][d],paths[branch][j][0][d],paths[branch][j][1][d],robot_radius):
-    #                     crushSpot.append([(shorter,longer), (paths[branch][shorter][0][d],paths[branch][shorter][1][d])])
-    #                     break
-        
-    #     dataOfbranch = [sum(lengthOfEach),lengthOfEach,crushSpot]
-    #     paths[branch].append(dataOfbranch)
-    
-    # best = 0
-    # best_score = float('INF')
-    # for i in range(len(paths)):
-    #     tmpData = paths[i][num_robot]
-    #     score = tmpData[0] + max(tmpData[1])
-    #     eachPathCrash = [0,0,0,0]
-
-    #     for crush in tmpData[2]:
-    #         eachPathCrash[crush[0][0]] += 1
-    #         eachPathCrash[crush[0][1]] += 1
-
-    #     for el in eachPathCrash:
-    #         score += (1.0 + (0.1) * el) * CrashWeight
-
-    #     print(i,"번째",tmpData[0],max(tmpData[1]),eachPathCrash,"점수 :",score)
-    #     if score < best_score :    
-    #         best = i
-    #         best_score = score
-            
-    # dataOfBest = paths[best][num_robot]
-    # print(pmts[best])
-    # for el in paths[best]:
-    #     print("..",el)
-
-    # colors = ["-r","-g","-b","-y"]
-    # if True:  # pragma: no cover
-    #     for i in range(num_robot):
-    #         plt.plot(ox, oy, ".k")
-    #         plt.plot(sx[i], sy[i], markers_s[i])
-    #         plt.plot(gx[i], gy[i], markers_g[i])
-    #         plt.grid(True)
-    #         plt.axis("equal")
-
-    # if True:  # pragma: no cover
-    #     for i in range(num_robot):
-    #         plt.plot(paths[best][i][0], paths[best][i][1], colors[i])
-    #         plt.pause(0.0005)
-    #     plt.show()
-    
-    # selected_path = []
-
-    # for i in range(num_robot):
-    #     pathOfEachBot = []
-    #     for n in range(len(paths[best][i][0])):
-    #         xPos, yPos = paths[best][i][0][n],paths[best][i][1][n]
-    #         pathOfEachBot.append([xPos,yPos])
-    #     selected_path.append(reversed(pathOfEachBot))
-
-    # return selected_path
     colors = [".g",".r",".y",".b"]
+    markers_s = ["og","or","oy","ob"]
+    markers_g = ["og","or","oy","ob"]
+
+    a_star = generateNewPlanner(loadAsIntArr("map2.txt"))
+
+    paths, combo = get_best_path(a_star,sx,sy,gx,gy)
+
+    print(combo)
+
+    colors = ["-g","-r","-y","-b"]
+    plt.plot(ox, oy, ".k")
     if True:  # pragma: no cover
         for i in range(num_robot):
-            plt.plot(ox, oy, ".k")
-            plt.plot(sx[i], sy[i], markers_s[i])
-            plt.plot(gx[i], gy[i], markers_g[i])
+            plt.plot(sx[combo[i][0]], sy[combo[i][0]], markers_s[combo[i][0]])
+            plt.plot(gx[combo[i][1]], gy[combo[i][1]], markers_g[combo[i][1]])
             plt.grid(True)
             plt.axis("equal")
-
+    print(paths)
     if True:  # pragma: no cover
+        # plt.plot(paths[i][0], paths[i][1], colors[i])
         for i in range(num_robot):
-            plt.plot(fixed_paths[i][0], fixed_paths[i][1], colors[i])
+            plt.plot(paths[i][0], paths[i][1], colors[i])
             plt.pause(0.0005)
         plt.show()
     
-    selected_path = []
-
-    for i in range(num_robot):
-        pathOfEachBot = []
-        for n in range(len(fixed_paths[i][0])):
-            xPos, yPos = fixed_paths[i][0][n],fixed_paths[i][1][n]
-            pathOfEachBot.append([xPos,yPos])
-        selected_path.append(reversed(pathOfEachBot))
-
-    return selected_path
-
 if __name__ == '__main__':
     run()
